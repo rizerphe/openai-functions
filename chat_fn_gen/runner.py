@@ -30,9 +30,14 @@ class OpenAIFunction(Protocol):
 class Runner:
     """A class for running OpenAI functions"""
 
-    def __init__(self, functions: list[OpenAIFunction] | None = None) -> None:
+    def __init__(
+        self,
+        functions: list[OpenAIFunction] | None = None,
+        model: str = "gpt-3.5-turbo-0613",
+    ) -> None:
         self.messages: list[MessageType] = []
         self.functions = functions or []
+        self.model = model
 
     @property
     def functions_schema(self) -> JsonType:
@@ -77,7 +82,7 @@ class Runner:
             NonFunctionMessageType: The response
         """
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
+            model=self.model,
             messages=self.messages,
             functions=self.functions_schema,
             function_call="auto",
