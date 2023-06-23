@@ -23,12 +23,15 @@ class EnumParser(ArgSchemaParser[T]):
 
     @property
     def argument_schema(self) -> dict[str, JsonType]:
-        return {
+        schema = {
             "type": "string",
-            "enum": [e.value for e in self.argtype],
+            "enum": [e.name for e in self.argtype],
         }
+        if self.argtype.__doc__ is not None:
+            schema["description"] = self.argtype.__doc__
+        return schema
 
     def parse_value(self, value: JsonType) -> T:
         if not isinstance(value, str):
             raise TypeError(f"Expected str, got {value}")
-        return self.argtype(value)
+        return self.argtype[value]

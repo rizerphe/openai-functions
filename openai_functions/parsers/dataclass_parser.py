@@ -46,5 +46,6 @@ class DataclassParser(ArgSchemaParser[IsDataclass]):
             **{
                 field.name: self.parse_rec(field.type).parse_value(value[field.name])
                 for field in dataclasses.fields(self.argtype)
+                if field.name in value
             }
         )
