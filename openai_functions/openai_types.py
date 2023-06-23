@@ -1,7 +1,16 @@
 """A module for type definitions for OpenAI API responses"""
 from __future__ import annotations
-from typing import Literal, NotRequired, TypedDict, overload
-from typing_extensions import TypeGuard
+from typing import (
+    Literal,
+    Protocol,
+    TYPE_CHECKING,
+    TypedDict,
+    overload,
+    runtime_checkable,
+)
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
 
 class FunctionCall(TypedDict):
@@ -11,19 +20,29 @@ class FunctionCall(TypedDict):
     arguments: str
 
 
-class NonFunctionMessageType(TypedDict):
-    """A type for OpenAI messages that are not function calls"""
-
-    role: Literal["system", "user", "assistant"]
-    content: str | None
-    function_call: NotRequired[FunctionCall]
-
-
 class FinalResponseMessageType(TypedDict):
     """A type for OpenAI messages that are final responses"""
 
     role: Literal["assistant"]
     content: str
+
+
+class ContentfulMessageType(TypedDict):
+    """A type for OpenAI messages that are contentful"""
+
+    role: Literal["system", "user", "assistant"]
+    content: str
+
+
+class IntermediateResponseMessageType(TypedDict):
+    """A type for OpenAI messages that are intermediate responses"""
+
+    role: Literal["assistant"]
+    content: None
+    function_call: FunctionCall
+
+
+NonFunctionMessageType = ContentfulMessageType | IntermediateResponseMessageType
 
 
 class FunctionMessageType(TypedDict):
@@ -98,6 +117,8 @@ class Message:
             FunctionCall | None: The function call
         """
         if self.message["role"] == "assistant":
+            if "content" in self.message:
+                return None
             return self.message.get("function_call")
         return None
 
@@ -135,20 +156,94 @@ class Message:
         return hash((self.content, self.role))
 
 
-class FinalResponseMessage(Message):
+@runtime_checkable
+class GenericMessage(Protocol):
+    """A container for OpenAI messages"""
+
+    message: MessageType
+
+    @overload
+    def __init__(self, message: MessageType) -> None:
+        ...
+
+    @overload
+    def __init__(self, message: str) -> None:
+        ...
+
+    @overload
+    def __init__(
+        self, message: str, role: Literal["system", "user", "assistant"]
+    ) -> None:
+        ...
+
+    def __init__(
+        self,
+        message: MessageType | str,
+        role: Literal["system", "user", "assistant"] = "user",
+    ):
+        ...
+
+    @property
+    def content(self) -> str | None:
+        """Get the content of the message"""
+
+    @property
+    def role(self) -> Literal["system", "user", "assistant", "function"]:
+        """Get the role of the message"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+    @property
+    def is_function_call(self) -> bool:
+        """Check if the message is a function call"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+    @property
+    def function_call(self) -> FunctionCall | None:
+        """Get the function call"""
+
+    @property
+    def is_final_response(self) -> bool:
+        """Check if the message is a final response"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+    def as_dict(self) -> MessageType:
+        """Get the message as a dictionary"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+    def __hash__(self) -> int:
+        ...
+
+
+class FinalResponseMessage(GenericMessage, Protocol):
     """A container for OpenAI final response messages"""
 
     message: FinalResponseMessageType  # type: ignore
 
     @property
     def content(self) -> str:
-        """Get the content of the message
+        """Get the content of the message"""
+        # This ellipsis is for Pyright #2758
+        ...  # pylint: disable=unnecessary-ellipsis
 
-        Returns:
-            str: The content of the message
-        """
-        return self.message["content"]
+    @property
+    def function_call(self) -> None:
+        """Get the function call"""
+
+    @property
+    def is_final_response(self) -> Literal[True]:
+        """Check if the message is a final response"""
+        ...  # pylint: disable=unnecessary-ellipsis
 
 
-def is_final_response_message(message: Message) -> TypeGuard[FinalResponseMessage]:
+def is_final_response_message(
+    message: GenericMessage,
+) -> TypeGuard[FinalResponseMessage]:
+    """Check if a message is a final response message
+
+    Args:
+        message (GenericMessage): The message to check
+
+    Returns:
+        TypeGuard[FinalResponseMessage]: Whether the message is a final response message
+    """
     return message.is_final_response

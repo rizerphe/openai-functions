@@ -10,6 +10,7 @@ from .function_wrapper import FunctionWrapper, WrapperConfig
 from .openai_types import (
     FinalResponseMessage,
     FunctionMessageType,
+    GenericMessage,
     Message,
     is_final_response_message,
 )
@@ -31,20 +32,25 @@ class OpenAIFunction(Protocol):
         """Get the schema for this function"""
 
     @property
-    def name(self) -> str:  # type: ignore
+    def name(self) -> str:
         """Get the name of this function"""
+        # This ellipsis is for Pyright #2758
+        ...  # pylint: disable=unnecessary-ellipsis
 
     @property
-    def save_return(self) -> bool:  # type: ignore
+    def save_return(self) -> bool:
         """Get whether to save the return value of this function"""
+        ...  # pylint: disable=unnecessary-ellipsis
 
     @property
-    def serialize(self) -> bool:  # type: ignore
+    def serialize(self) -> bool:
         """Get whether to continue running after this function"""
+        ...  # pylint: disable=unnecessary-ellipsis
 
     @property
-    def interpret_as_response(self) -> bool:  # type: ignore
+    def interpret_as_response(self) -> bool:
         """Get whether to interpret the return value of this function as a response"""
+        ...  # pylint: disable=unnecessary-ellipsis
 
 
 class Conversation:
@@ -55,7 +61,7 @@ class Conversation:
         functions: list[OpenAIFunction] | None = None,
         model: str = "gpt-3.5-turbo-0613",
     ) -> None:
-        self.messages: list[Message] = []
+        self.messages: list[GenericMessage] = []
         self.functions = functions or []
         self.model = model
 
@@ -85,42 +91,42 @@ class Conversation:
             json.loads(input_data["arguments"])
         )
 
-    def _add_message(self, message: Message) -> None:
+    def _add_message(self, message: GenericMessage) -> None:
         """Add a message
 
         Args:
-            message (Message): The message
+            message (GenericMessage): The message
         """
         self.messages.append(message)
 
-    def add_message(self, message: Message | MessageType | str) -> None:
+    def add_message(self, message: GenericMessage | MessageType | str) -> None:
         """Add a message
 
         Args:
-            message (Message | MessageType | str): The message
+            message (GenericMessage | MessageType | str): The message
         """
-        if isinstance(message, Message):
+        if isinstance(message, GenericMessage):
             self._add_message(message)
         else:
             self._add_message(Message(message))
 
-    def add_messages(self, messages: list[Message | MessageType]) -> None:
+    def add_messages(self, messages: list[GenericMessage | MessageType]) -> None:
         """Add messages
 
         Args:
-            messages (list[Message | MessageType]): The messages
+            messages (list[GenericMessage | MessageType]): The messages
         """
         for message in messages:
             self.add_message(message)
 
-    def pop_message(self, index: int = -1) -> Message:
+    def pop_message(self, index: int = -1) -> GenericMessage:
         """Pop a message
 
         Args:
             index (int): The index. Defaults to -1.
 
         Returns:
-            Message: The message
+            GenericMessage: The message
         """
         return self.messages.pop(index)
 
@@ -282,11 +288,11 @@ class Conversation:
 
         return self.run_function_and_substitute(function_call)
 
-    def generate_message(self) -> Message:
+    def generate_message(self) -> GenericMessage:
         """Generate the next message
 
         Returns:
-            Message: The response
+            GenericMessage: The response
         """
         if self.run_function_if_needed():
             return self.messages[-1]
@@ -299,7 +305,7 @@ class Conversation:
         """Run until a response is generated
 
         Returns:
-            Message: The response
+            FinalResponseMessage: The response
         """
         while True:
             message = self.generate_message()
