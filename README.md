@@ -2,6 +2,8 @@
 
 The `openai-functions` Python project simplifies the usage of OpenAI's function calling feature. It abstracts away the complexity of parsing function signatures and docstrings by providing developers with a clean and intuitive interface.
 
+![Tests](https://github.com/rizerphe/openai-functions/actions/workflows/tests.yml/badge.svg)
+
 ## Installation
 
 You can install `openai-functions` from PyPI using pip:
