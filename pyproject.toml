@@ -12,6 +12,9 @@ openai = "^0.27.8"
 docstring-parser = "^0.15"
 
 
+[tool.poetry.group.dev.dependencies]
+tox-poetry-installer = {extras = ["poetry"], version = "^0.10.3"}
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

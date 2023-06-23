@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ..json_type import JsonType
 
 
-class IsDataclass(Protocol):
+class IsDataclass(Protocol):  # pylint: disable=too-few-public-methods
     """A protocol for checking if a class is a dataclass"""
 
     __dataclass_fields__: ClassVar[dict]

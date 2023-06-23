@@ -19,7 +19,7 @@ class AtomicParser(ArgSchemaParser[T]):
     @property
     @abstractmethod
     def schema_type_name(self) -> str:
-        ...
+        """Name of the type in the json schema"""
 
     @classmethod
     def can_parse(cls, argtype: Any) -> TypeGuard[Type[T]]:

@@ -1,7 +1,8 @@
 """Parser for union types"""
 from __future__ import annotations
+import contextlib
 import types
-from typing import Any, TYPE_CHECKING, Type, TypeGuard
+from typing import Any, TYPE_CHECKING, Type, TypeGuard, get_args
 
 from .abc import ArgSchemaParser
 
@@ -19,11 +20,11 @@ class UnionParser(ArgSchemaParser[types.UnionType]):
     @property
     def argument_schema(self) -> dict[str, JsonType]:
         return {
-            "anyOf": [self.parse_rec(t).argument_schema for t in self.argtype.__args__],
+            "anyOf": [self.parse_rec(t).argument_schema for t in get_args(self.argtype)]
         }
 
     def parse_value(self, value: JsonType) -> types.UnionType:
-        for single_type in self.argtype.__args__:
+        for single_type in get_args(self.argtype):
             with contextlib.suppress(TypeError):
                 return self.parse_rec(single_type).parse_value(value)
-        raise TypeError(f"Expected one of {self.argtype.__args__}, got {value}")
+        raise TypeError(f"Expected one of {get_args(self.argtype)}, got {value}")

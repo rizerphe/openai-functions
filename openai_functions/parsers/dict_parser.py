@@ -1,7 +1,7 @@
 """Parser for dict types"""
 from __future__ import annotations
 import types
-from typing import Any, TYPE_CHECKING, Type, TypeGuard, TypeVar
+from typing import Any, TYPE_CHECKING, Type, TypeGuard, TypeVar, get_args
 
 from .abc import ArgSchemaParser
 
@@ -27,7 +27,7 @@ class DictParser(ArgSchemaParser[dict[str, T]]):
         return {
             "type": "object",
             "additionalProperties": self.parse_rec(
-                self.argtype.__args__[1]
+                get_args(self.argtype)[1]
             ).argument_schema,
         }
 
@@ -35,6 +35,6 @@ class DictParser(ArgSchemaParser[dict[str, T]]):
         if not isinstance(value, dict):
             raise TypeError(f"Expected dict, got {value}")
         return {
-            k: self.parse_rec(self.argtype.__args__[1]).parse_value(v)
+            k: self.parse_rec(get_args(self.argtype)[1]).parse_value(v)
             for k, v in value.items()
         }

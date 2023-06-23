@@ -9,6 +9,7 @@ from .enum_parser import EnumParser
 from .float_parser import FloatParser
 from .int_parser import IntParser
 from .list_parser import ListParser
+from .none_parser import NoneParser
 from .str_parser import StringParser
 from .union_parser import UnionParser
 
@@ -24,6 +25,7 @@ defargparsers: list[Type[ArgSchemaParser]] = [
     FloatParser,
     IntParser,
     ListParser,
+    NoneParser,
     StringParser,
     UnionParser,
 ]

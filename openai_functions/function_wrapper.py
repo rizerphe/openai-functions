@@ -55,7 +55,12 @@ class FunctionWrapper:
             JsonType: The arguments schema
         """
         return {
-            name: parser.argument_schema | {"description": self.arg_docs.get(name)}
+            name: parser.argument_schema
+            | (
+                {"description": self.arg_docs.get(name)}
+                if name in self.arg_docs
+                else {}
+            )
             for name, parser in self.argument_parsers.items()
         }
 
