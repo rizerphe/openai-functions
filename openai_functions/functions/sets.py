@@ -2,7 +2,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import Callable, TYPE_CHECKING, overload
+from typing import Any, Callable, TYPE_CHECKING, overload
 
 from .functions import FunctionResult, OpenAIFunction
 from .wrapper import FunctionWrapper, WrapperConfig
@@ -125,3 +125,14 @@ class FunctionSet(ABC):
             self._remove_function(function.name)
             return
         self._remove_function(function.__name__)
+
+    def __call__(self, input_data: FunctionCall) -> JsonType:
+        """Run the function with the given input data
+
+        Args:
+            input_data (FunctionCall): The input data from OpenAI
+
+        Returns:
+            JsonType: Your function's raw result
+        """
+        return self.run_function(input_data).result

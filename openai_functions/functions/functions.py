@@ -1,6 +1,7 @@
 """A module for running OpenAI functions"""
 from __future__ import annotations
 from dataclasses import dataclass
+import json
 from typing import Protocol, TYPE_CHECKING, runtime_checkable
 
 if TYPE_CHECKING:
@@ -41,9 +42,56 @@ class OpenAIFunction(Protocol):
 
 
 @dataclass
+class RawFunctionResult:
+    """A raw function result"""
+
+    result: JsonType
+    serialize: bool = True
+
+    @property
+    def serialized(self) -> str:
+        """Get the serialized result
+
+        Raises:
+            ValueError: If the result is not a string
+
+        Returns:
+            str: The serialized result
+        """
+        if self.serialize:
+            return json.dumps(self.result)
+        if isinstance(self.result, str):
+            return self.result
+        raise ValueError("Function did not return a string")
+
+
+@dataclass
 class FunctionResult:
     """A result of a function's execution"""
 
     name: str
-    content: str | None
+    raw_result: RawFunctionResult | None
     substitute: bool = False
+
+    @property
+    def content(self) -> str | None:
+        """Get the content of this result
+
+        Returns:
+            str | None: The content
+        """
+        return self.raw_result.serialized if self.raw_result else None
+
+    @property
+    def result(self) -> JsonType | None:
+        """Get the result of this function call
+
+        Raises:
+            ValueError: If the function was not expected to return a value
+
+        Returns:
+            JsonType: The result
+        """
+        if self.raw_result:
+            return self.raw_result.result
+        raise ValueError("Function was not expected to return a value")

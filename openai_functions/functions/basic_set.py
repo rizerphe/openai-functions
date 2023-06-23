@@ -4,7 +4,7 @@ import json
 from typing import TYPE_CHECKING
 
 from .exceptions import FunctionNotFoundError
-from .functions import FunctionResult, OpenAIFunction
+from .functions import FunctionResult, OpenAIFunction, RawFunctionResult
 from .sets import FunctionSet
 
 if TYPE_CHECKING:
@@ -65,28 +65,22 @@ class BasicFunctionSet(FunctionSet):
 
     def get_function_result(
         self, function: OpenAIFunction, arguments: dict[str, JsonType]
-    ) -> str | None:
+    ) -> RawFunctionResult | None:
         """Get the result of a function
 
         Args:
             function (OpenAIFunction): The function
             arguments (dict[str, JsonType]): The arguments
 
-        Raises:
-            TypeError: If the function returns a non-string value
-                while serialize is False
-
         Returns:
-            str | None: The result
+            RawFunctionResult | None: The result
         """
         result = function(arguments)
 
         if function.save_return:
             if function.serialize:
-                return json.dumps(result)
-            if isinstance(result, str):
-                return result
-            raise TypeError(f"Function {function.name} returned a non-string value")
+                return RawFunctionResult(result)
+            return RawFunctionResult(result)
         return None
 
     def _add_function(self, function: OpenAIFunction) -> None:
