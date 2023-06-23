@@ -118,7 +118,7 @@ class Message:
             FunctionCall | None: The function call
         """
         if self.message["role"] == "assistant":
-            if "content" in self.message:
+            if self.message.get("content") is not None:
                 return None
             return self.message.get("function_call")
         return None

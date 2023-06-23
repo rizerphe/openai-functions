@@ -297,3 +297,11 @@ class Conversation:
         """
         self.add_message(question)
         return self.run_until_response().content
+
+    def add_skill(self, skill: FunctionSet) -> None:
+        """Add a skill
+
+        Args:
+            skill (FunctionSet): The skill to add
+        """
+        self.skills.add_skill(skill)
