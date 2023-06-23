@@ -23,7 +23,7 @@ class EnumParser(ArgSchemaParser[T]):
 
     @property
     def argument_schema(self) -> dict[str, JsonType]:
-        schema = {
+        schema: dict[str, JsonType] = {
             "type": "string",
             "enum": [e.name for e in self.argtype],
         }
