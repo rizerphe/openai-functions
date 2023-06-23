@@ -2,12 +2,12 @@
 from __future__ import annotations
 import enum
 from typing import Any, TYPE_CHECKING, Type, TypeVar
-from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
+    from typing_extensions import TypeGuard
 
 T = TypeVar("T", bound=enum.Enum)
 

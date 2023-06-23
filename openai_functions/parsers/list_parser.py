@@ -1,12 +1,12 @@
 """Parser for list types"""
 from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING, Type, TypeVar, get_args, get_origin
-from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
+    from typing_extensions import TypeGuard
 
 T = TypeVar("T")
 

@@ -1,12 +1,12 @@
 """Parser for null types"""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Type
-from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
+    from typing_extensions import TypeGuard
 
 
 class NoneParser(ArgSchemaParser[None]):

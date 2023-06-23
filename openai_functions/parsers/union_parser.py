@@ -1,7 +1,6 @@
 """Parser for union types"""
 from __future__ import annotations
 import contextlib
-from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
@@ -22,6 +21,7 @@ except ImportError:
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
+    from typing_extensions import TypeGuard
 
 
 class UnionParser(ArgSchemaParser[UnionType]):

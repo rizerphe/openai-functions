@@ -2,12 +2,12 @@
 from __future__ import annotations
 import dataclasses
 from typing import Any, ClassVar, Protocol, TYPE_CHECKING, Type
-from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
+    from typing_extensions import TypeGuard
 
 
 class IsDataclass(Protocol):  # pylint: disable=too-few-public-methods

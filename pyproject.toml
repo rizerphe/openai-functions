@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openai-functions"
-version = "0.2.3"
+version = "0.2.4"
 description = ""
 authors = ["rizerphe <44440399+rizerphe@users.noreply.github.com>"]
 readme = "README.md"
