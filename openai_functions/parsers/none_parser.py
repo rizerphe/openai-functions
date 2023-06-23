@@ -1,7 +1,7 @@
 """Parser for null types"""
 from __future__ import annotations
-from types import NoneType
-from typing import Any, TYPE_CHECKING, Type, TypeGuard
+from typing import Any, TYPE_CHECKING, Type
+from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
@@ -14,7 +14,7 @@ class NoneParser(ArgSchemaParser[None]):
 
     @classmethod
     def can_parse(cls, argtype: Any) -> TypeGuard[Type[None]]:
-        return argtype in [None, NoneType]
+        return argtype in [None, type(None)]
 
     @property
     def argument_schema(self) -> dict[str, JsonType]:

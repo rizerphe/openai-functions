@@ -1,5 +1,7 @@
 """Test the function_wrapper module."""
 
+from typing import Union
+
 from openai_functions import FunctionWrapper
 import pytest
 
@@ -142,7 +144,7 @@ def test_function_schema_generation_parameters_with_param_docs():
 def test_function_schema_generation_parameters_with_union_types():
     """Test that the function schema is generated correctly from the docstring."""
 
-    def test_function(param1: int | str):
+    def test_function(param1: Union[int, str]):
         """Test function docstring."""
         pass
 
@@ -200,7 +202,7 @@ def test_function_call():
 def test_function_call_with_union():
     """Test that the function is called correctly."""
 
-    def test_function(param1: int | str | None):
+    def test_function(param1: Union[int, str, None]):
         """Test function docstring."""
         return param1
 

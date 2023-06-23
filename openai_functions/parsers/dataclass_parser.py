@@ -1,7 +1,8 @@
 """Parser for dataclass types"""
 from __future__ import annotations
 import dataclasses
-from typing import Any, ClassVar, Protocol, TYPE_CHECKING, Type, TypeGuard
+from typing import Any, ClassVar, Protocol, TYPE_CHECKING, Type
+from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 

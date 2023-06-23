@@ -10,6 +10,7 @@ packages = [{include = "openai_functions"}]
 python = "^3.8"
 openai = "^0.27.8"
 docstring-parser = "^0.15"
+typing-extensions = "^4.6.3"
 
 
 [tool.poetry.group.dev.dependencies]

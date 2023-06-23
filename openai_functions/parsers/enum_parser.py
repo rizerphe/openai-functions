@@ -1,7 +1,8 @@
 """Parser for enum types"""
 from __future__ import annotations
 import enum
-from typing import Any, TYPE_CHECKING, Type, TypeGuard, TypeVar
+from typing import Any, TYPE_CHECKING, Type, TypeVar
+from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 

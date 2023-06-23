@@ -1,7 +1,7 @@
 """Parser for dict types"""
 from __future__ import annotations
-import types
-from typing import Any, TYPE_CHECKING, Type, TypeGuard, TypeVar, get_args
+from typing import Any, Dict, TYPE_CHECKING, Type, TypeVar, get_args, get_origin
+from typing_extensions import TypeGuard
 
 from .abc import ArgSchemaParser
 
@@ -11,19 +11,22 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class DictParser(ArgSchemaParser[dict[str, T]]):
+class DictParser(ArgSchemaParser[Dict[str, T]]):
     """Parser for dict types"""
 
     @classmethod
-    def can_parse(cls, argtype: Any) -> TypeGuard[Type[dict[str, T]]]:
+    def can_parse(cls, argtype: Any) -> TypeGuard[Type[Dict[str, T]]]:
         return (
-            isinstance(argtype, types.GenericAlias)
-            and argtype.__origin__ is dict
-            and argtype.__args__[0] is str
+            get_origin(argtype)
+            in [
+                dict,
+                Dict,
+            ]
+            and get_args(argtype)[0] is str
         )
 
     @property
-    def argument_schema(self) -> dict[str, JsonType]:
+    def argument_schema(self) -> Dict[str, JsonType]:
         return {
             "type": "object",
             "additionalProperties": self.parse_rec(
@@ -31,7 +34,7 @@ class DictParser(ArgSchemaParser[dict[str, T]]):
             ).argument_schema,
         }
 
-    def parse_value(self, value: JsonType) -> dict[str, T]:
+    def parse_value(self, value: JsonType) -> Dict[str, T]:
         if not isinstance(value, dict):
             raise TypeError(f"Expected dict, got {value}")
         return {

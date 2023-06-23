@@ -1,7 +1,8 @@
 """Abstract base class for argument schema parsers"""
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TYPE_CHECKING, Type, TypeGuard, TypeVar
+from typing import Any, Generic, TYPE_CHECKING, Type, TypeVar
+from typing_extensions import TypeGuard
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
