@@ -18,9 +18,28 @@ class FunctionWrapper:
         self,
         func: Callable[..., JsonType],
         parsers: list[Type[ArgSchemaParser]] | None = None,
+        save_return: bool = True,
+        serialize: bool = True,
+        interpret_as_response: bool = False,
     ) -> None:
+        """Initialize a FunctionWrapper
+
+        Args:
+            func (Callable[..., JsonType]): The function to wrap
+            parsers (list[Type[ArgSchemaParser]], optional): The parsers to use.
+            save_return (bool): Whether to send the return value of this
+                function to the AI. Defaults to True.
+            serialize (bool): Whether to serialize the return value of this
+                function. Defaults to True. Otherwise, the return value must be a
+                string.
+            interpret_as_response (bool): Whether to interpret the return
+                value of this function as a response of the agent. Defaults to False.
+        """
         self.func = func
         self.parsers = parsers or defargparsers
+        self.save_return = save_return
+        self.serialize = serialize
+        self.interpret_as_response = interpret_as_response
 
     @property
     def argument_parsers(self) -> OrderedDict[str, ArgSchemaParser]:

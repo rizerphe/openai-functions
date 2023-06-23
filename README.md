@@ -35,7 +35,7 @@ class Unit(enum.Enum):
     FAHRENHEIT = "fahrenheit"
     CELSIUS = "celsius"
 
-@runner.add_function
+@runner.add_function()
 def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
     """
     Get the current weather in a given location.
