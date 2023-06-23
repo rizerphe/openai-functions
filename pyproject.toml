@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "chat-fn-gen"
+name = "openai-functions"
 version = "0.1.0"
 description = ""
 authors = ["rizerphe <44440399+rizerphe@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "chat_fn_gen"}]
+packages = [{include = "openai_functions"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
