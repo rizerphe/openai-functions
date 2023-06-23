@@ -19,23 +19,23 @@ pip install openai-functions
 ```python
 import enum
 import openai
-from openai_functions import Runner
+from openai_functions import Conversation
 ```
 
-2. Create a `Runner` instance:
+2. Create a `Conversation` instance:
 
 ```python
-runner = Runner()
+conversation = Conversation()
 ```
 
-3. Define your functions using the `@runner.add_function` decorator:
+3. Define your functions using the `@conversation.add_function` decorator:
 
 ```python
 class Unit(enum.Enum):
     FAHRENHEIT = "fahrenheit"
     CELSIUS = "celsius"
 
-@runner.add_function()
+@conversation.add_function()
 def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
     """
     Get the current weather in a given location.
@@ -56,10 +56,10 @@ def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
     return weather_info
 ```
 
-4. Add user messages using the `runner.add_message` method:
+4. Add user messages using the `conversation.add_message` method:
 
 ```python
-runner.add_message(
+conversation.add_message(
     {
         "role": "user",
         "content": "What's the weather in San Francisco?",
@@ -67,10 +67,10 @@ runner.add_message(
 )
 ```
 
-5. Call the `runner.run_until_response()` method to trigger the conversation and retrieve the response:
+5. Call the `conversation.run_until_response()` method to trigger the conversation and retrieve the response:
 
 ```python
-print(runner.run_until_response())
+print(conversation.run_until_response())
 ```
 
 ## How it Works

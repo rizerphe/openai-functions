@@ -6,8 +6,13 @@ from typing import Callable, Protocol, TYPE_CHECKING, overload, runtime_checkabl
 
 import openai
 
-from .function_wrapper import FunctionWrapper
-from .openai_types import FunctionMessageType, Message
+from .function_wrapper import FunctionWrapper, WrapperConfig
+from .openai_types import (
+    FinalResponseMessage,
+    FunctionMessageType,
+    Message,
+    is_final_response_message,
+)
 
 if TYPE_CHECKING:
     from .json_type import JsonType
@@ -42,7 +47,7 @@ class OpenAIFunction(Protocol):
         """Get whether to interpret the return value of this function as a response"""
 
 
-class Runner:
+class Conversation:
     """A class for running OpenAI functions"""
 
     def __init__(
@@ -88,11 +93,11 @@ class Runner:
         """
         self.messages.append(message)
 
-    def add_message(self, message: Message | MessageType) -> None:
+    def add_message(self, message: Message | MessageType | str) -> None:
         """Add a message
 
         Args:
-            message (Message | MessageType): The message
+            message (Message | MessageType | str): The message
         """
         if isinstance(message, Message):
             self._add_message(message)
@@ -112,7 +117,7 @@ class Runner:
         """Pop a message
 
         Args:
-            index (int, optional): The index. Defaults to -1.
+            index (int): The index. Defaults to -1.
 
         Returns:
             Message: The message
@@ -161,7 +166,11 @@ class Runner:
 
         Args:
             function (OpenAIFunction): The function
-            arguments (JsonType): The arguments
+            arguments (dict[str, JsonType]): The arguments
+
+        Raises:
+            TypeError: If the function returns a non-string value
+                while serialize is False
 
         Returns:
             str | None: The result
@@ -195,8 +204,8 @@ class Runner:
         """Add a function result
 
         Args:
-            function_name (str | None): The function name
-            function_result (str): The function result
+            function_name (str): The function name
+            function_result (str | None): The function result
 
         Returns:
             bool: Whether the function result was added
@@ -286,7 +295,7 @@ class Runner:
         self.add_message(message)
         return Message(message)
 
-    def run_until_response(self) -> Message:
+    def run_until_response(self) -> FinalResponseMessage:
         """Run until a response is generated
 
         Returns:
@@ -294,7 +303,7 @@ class Runner:
         """
         while True:
             message = self.generate_message()
-            if message.is_final_response:
+            if is_final_response_message(message):
                 return message
 
     def _add_function(self, function: OpenAIFunction) -> None:
@@ -363,7 +372,8 @@ class Runner:
         if callable(function):
             self._add_function(
                 FunctionWrapper(
-                    function, None, save_return, serialize, interpret_as_response
+                    function,
+                    WrapperConfig(None, save_return, serialize, interpret_as_response),
                 )
             )
             return function
@@ -398,3 +408,15 @@ class Runner:
             self._remove_function(function.name)
             return
         self._remove_function(function.__name__)
+
+    def ask(self, question: str) -> str:
+        """Ask the AI a question
+
+        Args:
+            question (str): The question
+
+        Returns:
+            str: The answer to the question
+        """
+        self.add_message(question)
+        return self.run_until_response().content

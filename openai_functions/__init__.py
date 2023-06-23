@@ -1,7 +1,14 @@
 """ChatGPT function calling based on function docstrings."""
-from .function_wrapper import FunctionWrapper
+from .conversation import Conversation
+from .function_wrapper import FunctionWrapper, WrapperConfig
 from .openai_types import Message
 from .parsers import ArgSchemaParser, defargparsers
-from .runner import Runner
 
-__all__ = ["Runner", "defargparsers", "ArgSchemaParser", "FunctionWrapper", "Message"]
+__all__ = [
+    "Conversation",
+    "defargparsers",
+    "ArgSchemaParser",
+    "FunctionWrapper",
+    "Message",
+    "WrapperConfig",
+]

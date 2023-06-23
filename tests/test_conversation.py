@@ -1,32 +1,32 @@
-"""Test the runner."""
+"""Test the conversation."""
 import pytest
 
-from openai_functions import FunctionWrapper, Runner
+from openai_functions import FunctionWrapper, Conversation
 
 
-def test_runner_functions():
-    """Test the runner function management."""
-    runner = Runner()
+def test_conversation_functions():
+    """Test the conversation function management."""
+    conversation = Conversation()
 
-    @runner.add_function
+    @conversation.add_function
     def test_function():
         """Test function."""
 
-    @runner.add_function
+    @conversation.add_function
     def removed_function():
         """Removed function."""
 
-    @runner.add_function
+    @conversation.add_function
     def test_function_with_params(a: int, b: int):
         """Test function with params."""
         assert a == 1
         assert b == 2
         return a + b
 
-    runner.add_function(FunctionWrapper(lambda: None))
-    runner.remove_function("removed_function")
+    conversation.add_function(FunctionWrapper(lambda: None))
+    conversation.remove_function("removed_function")
 
-    assert runner.functions_schema == [
+    assert conversation.functions_schema == [
         {
             "name": "test_function",
             "description": "Test function.",
@@ -59,7 +59,7 @@ def test_runner_functions():
         },
     ]
     assert (
-        runner.run_function(
+        conversation.run_function(
             {
                 "name": "test_function_with_params",
                 "arguments": '{"a": 1, "b": 2}',
@@ -68,4 +68,4 @@ def test_runner_functions():
         == 3
     )
     with pytest.raises(ValueError):
-        runner.run_function({"name": "invalid_function", "arguments": "{}"})
+        conversation.run_function({"name": "invalid_function", "arguments": "{}"})

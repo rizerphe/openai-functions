@@ -1,6 +1,7 @@
 """A module for type definitions for OpenAI API responses"""
 from __future__ import annotations
 from typing import Literal, NotRequired, TypedDict, overload
+from typing_extensions import TypeGuard
 
 
 class FunctionCall(TypedDict):
@@ -16,6 +17,13 @@ class NonFunctionMessageType(TypedDict):
     role: Literal["system", "user", "assistant"]
     content: str | None
     function_call: NotRequired[FunctionCall]
+
+
+class FinalResponseMessageType(TypedDict):
+    """A type for OpenAI messages that are final responses"""
+
+    role: Literal["assistant"]
+    content: str
 
 
 class FunctionMessageType(TypedDict):
@@ -125,3 +133,22 @@ class Message:
 
     def __hash__(self) -> int:
         return hash((self.content, self.role))
+
+
+class FinalResponseMessage(Message):
+    """A container for OpenAI final response messages"""
+
+    message: FinalResponseMessageType  # type: ignore
+
+    @property
+    def content(self) -> str:
+        """Get the content of the message
+
+        Returns:
+            str: The content of the message
+        """
+        return self.message["content"]
+
+
+def is_final_response_message(message: Message) -> TypeGuard[FinalResponseMessage]:
+    return message.is_final_response

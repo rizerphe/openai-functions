@@ -1,5 +1,6 @@
 """Wrap a function for jsonschema io."""
 from __future__ import annotations
+from dataclasses import dataclass
 import inspect
 from typing import Any, Callable, OrderedDict, TYPE_CHECKING, Type
 
@@ -11,35 +12,70 @@ if TYPE_CHECKING:
     from .json_type import JsonType
 
 
+@dataclass
+class WrapperConfig:
+    """Configuration for a FunctionWrapper"""
+
+    parsers: list[Type[ArgSchemaParser]] | None = None
+    save_return: bool = True
+    serialize: bool = True
+    interpret_as_response: bool = False
+
+
 class FunctionWrapper:
     """Wraps a function for jsonschema io"""
 
     def __init__(
         self,
         func: Callable[..., JsonType],
-        parsers: list[Type[ArgSchemaParser]] | None = None,
-        save_return: bool = True,
-        serialize: bool = True,
-        interpret_as_response: bool = False,
+        config: WrapperConfig | None = None,
     ) -> None:
         """Initialize a FunctionWrapper
 
         Args:
             func (Callable[..., JsonType]): The function to wrap
-            parsers (list[Type[ArgSchemaParser]], optional): The parsers to use.
-            save_return (bool): Whether to send the return value of this
-                function to the AI. Defaults to True.
-            serialize (bool): Whether to serialize the return value of this
-                function. Defaults to True. Otherwise, the return value must be a
-                string.
-            interpret_as_response (bool): Whether to interpret the return
-                value of this function as a response of the agent. Defaults to False.
+            config (WrapperConfig | None, optional): The configuration for the wrapper.
         """
         self.func = func
-        self.parsers = parsers or defargparsers
-        self.save_return = save_return
-        self.serialize = serialize
-        self.interpret_as_response = interpret_as_response
+        self.config = config or WrapperConfig()
+
+    @property
+    def parsers(self) -> list[Type[ArgSchemaParser]]:
+        """Get the parsers for this function
+
+        Returns:
+            list[Type[ArgSchemaParser]]: The parsers
+        """
+        return self.config.parsers or defargparsers
+
+    @property
+    def save_return(self) -> bool:
+        """Get whether to send the return value of this function to the AI
+
+        Returns:
+            bool: Whether to send the return value to the AI
+        """
+        return self.config.save_return
+
+    @property
+    def serialize(self) -> bool:
+        """Get whether to serialize the return value of this function
+
+        The function should return strictly a string if this is false.
+
+        Returns:
+            bool: Whether to serialize the return value
+        """
+        return self.config.serialize
+
+    @property
+    def interpret_as_response(self) -> bool:
+        """Get whether to interpret the return value as an assistant response
+
+        Returns:
+            bool: Whether to interpret the return value as a response
+        """
+        return self.config.interpret_as_response
 
     @property
     def argument_parsers(self) -> OrderedDict[str, ArgSchemaParser]:
