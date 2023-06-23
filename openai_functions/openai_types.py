@@ -5,6 +5,7 @@ from typing import (
     Protocol,
     TYPE_CHECKING,
     TypedDict,
+    Union,
     overload,
     runtime_checkable,
 )
@@ -42,7 +43,7 @@ class IntermediateResponseMessageType(TypedDict):
     function_call: FunctionCall
 
 
-NonFunctionMessageType = ContentfulMessageType | IntermediateResponseMessageType
+NonFunctionMessageType = Union[ContentfulMessageType, IntermediateResponseMessageType]
 
 
 class FunctionMessageType(TypedDict):
@@ -53,7 +54,7 @@ class FunctionMessageType(TypedDict):
     content: str | None
 
 
-MessageType = NonFunctionMessageType | FunctionMessageType
+MessageType = Union[NonFunctionMessageType, FunctionMessageType]
 
 
 class Message:
