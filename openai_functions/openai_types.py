@@ -1,4 +1,5 @@
 """A module for type definitions for OpenAI API responses"""
+from __future__ import annotations
 from typing import Literal, NotRequired, TypedDict
 
 

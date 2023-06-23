@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "openai-functions"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 authors = ["rizerphe <44440399+rizerphe@users.noreply.github.com>"]
 readme = "README.md"
 packages = [{include = "openai_functions"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.8"
 openai = "^0.27.8"
 docstring-parser = "^0.15"
 
