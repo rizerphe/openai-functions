@@ -27,7 +27,7 @@ class FunctionWrapper:
 
     def __init__(
         self,
-        func: Callable[..., JsonType],
+        func: Callable[..., Any],
         config: WrapperConfig | None = None,
     ) -> None:
         """Initialize a FunctionWrapper
@@ -159,15 +159,17 @@ class FunctionWrapper:
         Returns:
             dict[str, JsonType]: The schema
         """
-        return {
+        schema: dict[str, JsonType] = {
             "name": self.name,
-            "description": self.parsed_docs.short_description,
             "parameters": {
                 "type": "object",
                 "properties": self.arguments_schema,
                 "required": self.required_arguments,
             },
         }
+        if self.parsed_docs.short_description:
+            schema["description"] = self.parsed_docs.short_description
+        return schema
 
     def parse_argument(self, argument: inspect.Parameter) -> ArgSchemaParser:
         """Parse an argument
@@ -203,13 +205,13 @@ class FunctionWrapper:
             for name, value in arguments.items()
         )
 
-    def __call__(self, arguments: dict[str, JsonType]) -> JsonType:
+    def __call__(self, arguments: dict[str, JsonType]) -> Any:
         """Call the wrapped function
 
         Args:
             arguments (dict[str, JsonType]): The arguments to call the function with
 
         Returns:
-            JsonType: The result of the function
+            The result of the function
         """
         return self.func(**self.parse_arguments(arguments))

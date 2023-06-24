@@ -7,6 +7,7 @@ from .functions import (
     FunctionWrapper,
     WrapperConfig,
 )
+from .nlp import nlp
 from .openai_types import Message
 from .parsers import ArgSchemaParser, defargparsers
 
@@ -18,6 +19,7 @@ __all__ = [
     "defargparsers",
     "ArgSchemaParser",
     "FunctionWrapper",
+    "nlp",
     "Message",
     "WrapperConfig",
 ]

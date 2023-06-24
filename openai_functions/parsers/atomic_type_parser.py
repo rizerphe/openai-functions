@@ -34,5 +34,5 @@ class AtomicParser(ArgSchemaParser[T]):
 
     def parse_value(self, value: JsonType) -> T:
         if not isinstance(value, self._type):
-            raise TypeError(f"Expected {self._type()}, got {type(value)}")
+            raise TypeError(f"Expected {self._type}, got {type(value)}")
         return value

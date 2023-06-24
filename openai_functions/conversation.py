@@ -1,6 +1,6 @@
 """A module for running OpenAI functions"""
 from __future__ import annotations
-from typing import Callable, TYPE_CHECKING, overload
+from typing import Any, Callable, TYPE_CHECKING, overload
 
 import openai
 
@@ -9,6 +9,7 @@ from .openai_types import (
     FinalResponseMessage,
     FunctionMessageType,
     GenericMessage,
+    IntermediateResponseMessageType,
     Message,
     is_final_response_message,
 )
@@ -16,8 +17,14 @@ from .openai_types import (
 
 if TYPE_CHECKING:
     from .json_type import JsonType
-    from .openai_types import FunctionCall, MessageType, NonFunctionMessageType
-    from .functions.sets import FunctionResult, FunctionSet, OpenAIFunction
+    from .openai_types import (
+        FunctionCall,
+        MessageType,
+        NonFunctionMessageType,
+        OpenAIFunctionCallInput,
+    )
+    from .functions.functions import OpenAIFunction
+    from .functions.sets import FunctionResult, FunctionSet
 
 
 class Conversation:
@@ -84,8 +91,13 @@ class Conversation:
         """Clear the messages"""
         self.messages = []
 
-    def _generate_message(self) -> NonFunctionMessageType:
+    def _generate_message(
+        self, function_call: OpenAIFunctionCallInput = "auto"
+    ) -> NonFunctionMessageType:
         """Generate a response
+
+        Args:
+            function_call (OpenAIFunctionCallInput): The function call.
 
         Returns:
             NonFunctionMessageType: The response
@@ -94,7 +106,7 @@ class Conversation:
             model=self.model,
             messages=[message.as_dict() for message in self.messages],
             functions=self.functions_schema,
-            function_call="auto",
+            function_call=function_call,
         )
         return response["choices"][0]["message"]  # type: ignore
 
@@ -187,8 +199,13 @@ class Conversation:
 
         return self.run_function_and_substitute(function_call)
 
-    def generate_message(self) -> GenericMessage:
+    def generate_message(
+        self, function_call: OpenAIFunctionCallInput = "auto"
+    ) -> GenericMessage:
         """Generate the next message
+
+        Args:
+            function_call (OpenAIFunctionCallInput): The function call
 
         Returns:
             GenericMessage: The response
@@ -196,7 +213,7 @@ class Conversation:
         if self.run_function_if_needed():
             return self.messages[-1]
 
-        message = self._generate_message()
+        message = self._generate_message(function_call)
         self.add_message(message)
         return Message(message)
 
@@ -305,3 +322,19 @@ class Conversation:
             skill (FunctionSet): The skill to add
         """
         self.skills.add_skill(skill)
+
+    def run(self, function: str, prompt: str) -> Any:
+        """Run a specified function and return the raw function result
+
+        Args:
+            prompt (str): The prompt to use
+            function (str): The function to run
+
+        Returns:
+            The raw function result
+        """
+        self.add_message(prompt)
+        # We can do type: ignore as we know we're forcing a function call
+        response: IntermediateResponseMessageType
+        response = self._generate_message({"name": function})  # type: ignore
+        return self.skills(response["function_call"])

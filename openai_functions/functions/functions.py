@@ -2,7 +2,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 import json
-from typing import Protocol, TYPE_CHECKING, runtime_checkable
+from typing import Any, Protocol, TYPE_CHECKING, runtime_checkable
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
@@ -45,7 +45,7 @@ class OpenAIFunction(Protocol):
 class RawFunctionResult:
     """A raw function result"""
 
-    result: JsonType
+    result: Any
     serialize: bool = True
 
     @property

@@ -56,21 +56,38 @@ def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
     return weather_info
 ```
 
-4. Add user messages using the `conversation.add_message` method:
+4. Ask the AI a question:
 
 ```python
-conversation.add_message(
-    {
-        "role": "user",
-        "content": "What's the weather in San Francisco?",
-    }
-)
+conversation.ask("What's the weather in San Francisco?")
 ```
 
-5. Call the `conversation.run_until_response()` method to trigger the conversation and retrieve the response:
+## Another usecase: data extraction
+
+1. Import the necessary modules:
 
 ```python
-print(conversation.run_until_response())
+from dataclasses import dataclass
+import openai
+from openai_functions import nlp
+```
+
+3. Define your data container using the `@nlp` decorator:
+
+```python
+@nlp
+@dataclass
+class Person:
+    """Extract personal info"""
+
+    name: str
+    age: int
+```
+
+4. Ask the AI for a summary of the data:
+
+```python
+Person.nlp("I'm Jack and I'm 20 years old.", "Person")
 ```
 
 ## How it Works

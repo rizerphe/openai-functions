@@ -50,7 +50,6 @@ def test_skills_functions():
         },
         {
             "name": "<lambda>",
-            "description": None,
             "parameters": {
                 "type": "object",
                 "properties": {},

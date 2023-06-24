@@ -120,7 +120,7 @@ class Message:
         if self.message["role"] == "assistant":
             if self.message.get("content") is not None:
                 return None
-            return self.message.get("function_call")
+            return self.message.get("function_call")  # type: ignore
         return None
 
     @property
@@ -248,3 +248,12 @@ def is_final_response_message(
         TypeGuard[FinalResponseMessage]: Whether the message is a final response message
     """
     return message.is_final_response
+
+
+class ForcedFunctionCall(TypedDict):
+    """A type for forced function calls"""
+
+    name: str
+
+
+OpenAIFunctionCallInput = Union[ForcedFunctionCall, Literal["auto", "none"]]

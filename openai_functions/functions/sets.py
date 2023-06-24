@@ -2,7 +2,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import Any, Callable, TYPE_CHECKING, overload
+from typing import Callable, TYPE_CHECKING, overload
 
 from .functions import FunctionResult, OpenAIFunction
 from .wrapper import FunctionWrapper, WrapperConfig

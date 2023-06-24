@@ -21,7 +21,6 @@ def test_function_schema_generation_empty():
     assert function_wrapper.name == "test_function"
     assert function_schema == {
         "name": "test_function",
-        "description": None,
         "parameters": {
             "type": "object",
             "properties": {},
