@@ -21,7 +21,7 @@ if TYPE_CHECKING:
         FunctionCall,
         MessageType,
         NonFunctionMessageType,
-        OpenAIFunctionCallInput,
+        OpenAiFunctionCallInput,
     )
     from .functions.functions import OpenAIFunction
     from .functions.sets import FunctionResult, FunctionSet
@@ -92,12 +92,12 @@ class Conversation:
         self.messages = []
 
     def _generate_message(
-        self, function_call: OpenAIFunctionCallInput = "auto"
+        self, function_call: OpenAiFunctionCallInput = "auto"
     ) -> NonFunctionMessageType:
         """Generate a response
 
         Args:
-            function_call (OpenAIFunctionCallInput): The function call.
+            function_call (OpenAiFunctionCallInput): The function call.
 
         Returns:
             NonFunctionMessageType: The response
@@ -200,12 +200,12 @@ class Conversation:
         return self.run_function_and_substitute(function_call)
 
     def generate_message(
-        self, function_call: OpenAIFunctionCallInput = "auto"
+        self, function_call: OpenAiFunctionCallInput = "auto"
     ) -> GenericMessage:
         """Generate the next message
 
         Args:
-            function_call (OpenAIFunctionCallInput): The function call
+            function_call (OpenAiFunctionCallInput): The function call
 
         Returns:
             GenericMessage: The response

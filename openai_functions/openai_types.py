@@ -256,4 +256,4 @@ class ForcedFunctionCall(TypedDict):
     name: str
 
 
-OpenAIFunctionCallInput = Union[ForcedFunctionCall, Literal["auto", "none"]]
+OpenAiFunctionCallInput = Union[ForcedFunctionCall, Literal["auto", "none"]]

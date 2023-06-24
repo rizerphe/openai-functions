@@ -4,6 +4,8 @@ from dataclasses import dataclass
 import json
 from typing import Any, Protocol, TYPE_CHECKING, runtime_checkable
 
+from .exceptions import NonSerializableOutputError
+
 if TYPE_CHECKING:
     from ..json_type import JsonType
 
@@ -53,7 +55,7 @@ class RawFunctionResult:
         """Get the serialized result
 
         Raises:
-            ValueError: If the result is not a string
+            NonSerializableOutputError: If the result is not a string
 
         Returns:
             str: The serialized result
@@ -62,7 +64,7 @@ class RawFunctionResult:
             return json.dumps(self.result)
         if isinstance(self.result, str):
             return self.result
-        raise ValueError("Function did not return a string")
+        raise NonSerializableOutputError()
 
 
 @dataclass
@@ -83,15 +85,12 @@ class FunctionResult:
         return self.raw_result.serialized if self.raw_result else None
 
     @property
-    def result(self) -> JsonType | None:
+    def result(self) -> Any | None:
         """Get the result of this function call
-
-        Raises:
-            ValueError: If the function was not expected to return a value
 
         Returns:
             JsonType: The result
         """
         if self.raw_result:
             return self.raw_result.result
-        raise ValueError("Function was not expected to return a value")
+        return None

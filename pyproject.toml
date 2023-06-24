@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "openai-functions"
-version = "0.5.3"
-description = ""
+version = "0.5.4"
+description = "Simplifies the usage of OpenAI's function calling."
 authors = ["rizerphe <44440399+rizerphe@users.noreply.github.com>"]
 readme = "README.md"
 packages = [{include = "openai_functions"}]
