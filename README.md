@@ -87,8 +87,10 @@ class Person:
 4. Ask the AI for a summary of the data:
 
 ```python
-Person.nlp("I'm Jack and I'm 20 years old.", "Person")
+person = Person.from_natural_language("I'm Jack and I'm 20 years old.")
 ```
+
+Note: mypy does not parse class decorators ([#3135](https://github.com/python/mypy/issues/3135)), so you might have trouble getting type checking when using it like this. Consider using something like `nlp(Person).from_natural_language` to get proper type support.
 
 ## How it Works
 

@@ -28,11 +28,17 @@ class FinalResponseMessageType(TypedDict):
     content: str
 
 
-class ContentfulMessageType(TypedDict):
-    """A type for OpenAI messages that are contentful"""
+class UserMessageType(TypedDict):
+    """A type for OpenAI messages that are user messages"""
 
-    role: Literal["system", "user", "assistant"]
+    role: Literal[
+        "system",
+        "user",
+    ]
     content: str
+
+
+ContentfulMessageType = Union[FinalResponseMessageType, UserMessageType]
 
 
 class IntermediateResponseMessageType(TypedDict):
@@ -79,9 +85,16 @@ class Message:
         message: MessageType | str,
         role: Literal["system", "user", "assistant"] = "user",
     ):
-        self.message: MessageType = (
-            {"role": role, "content": message} if isinstance(message, str) else message
-        )
+        if isinstance(message, str):
+            if role == "assistant":  # We have to split this up because of mypy
+                self.message: MessageType = {"role": role, "content": message}
+            else:
+                self.message = {
+                    "role": role,
+                    "content": message,
+                }
+        else:
+            self.message = message
 
     @property
     def content(self) -> str | None:
@@ -232,6 +245,26 @@ class FinalResponseMessage(GenericMessage, Protocol):
 
     @property
     def is_final_response(self) -> Literal[True]:
+        """Check if the message is a final response"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+
+class FunctionCallMessage(GenericMessage, Protocol):
+    """A container for OpenAI function call messages"""
+
+    message: IntermediateResponseMessageType
+
+    @property
+    def content(self) -> None:
+        """Get the content of the message"""
+
+    @property
+    def function_call(self) -> FunctionCall:
+        """Get the function call"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+    @property
+    def is_final_response(self) -> Literal[False]:
         """Check if the message is a final response"""
         ...  # pylint: disable=unnecessary-ellipsis
 

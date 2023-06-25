@@ -1,12 +1,15 @@
 """A module for running OpenAI functions"""
 from __future__ import annotations
-from typing import Any, Callable, TYPE_CHECKING, overload
+from typing import Any, Callable, Literal, TYPE_CHECKING, overload
 
 import openai
 
 from .functions.union import UnionSkillSet
 from .openai_types import (
     FinalResponseMessage,
+    FinalResponseMessageType,
+    ForcedFunctionCall,
+    FunctionCallMessage,
     FunctionMessageType,
     GenericMessage,
     IntermediateResponseMessageType,
@@ -90,6 +93,24 @@ class Conversation:
     def clear_messages(self) -> None:
         """Clear the messages"""
         self.messages = []
+
+    @overload
+    def _generate_message(
+        self, function_call: ForcedFunctionCall
+    ) -> IntermediateResponseMessageType:
+        ...
+
+    @overload
+    def _generate_message(
+        self, function_call: Literal["none"]
+    ) -> FinalResponseMessageType:
+        ...
+
+    @overload
+    def _generate_message(
+        self, function_call: Literal["auto"] = "auto"
+    ) -> NonFunctionMessageType:
+        ...
 
     def _generate_message(
         self, function_call: OpenAiFunctionCallInput = "auto"
@@ -210,21 +231,28 @@ class Conversation:
         Returns:
             GenericMessage: The response
         """
-        if self.run_function_if_needed():
+        if function_call in ["auto", "none"] and self.run_function_if_needed():
             return self.messages[-1]
 
-        message = self._generate_message(function_call)
+        message: NonFunctionMessageType = self._generate_message(function_call)
         self.add_message(message)
         return Message(message)
 
-    def run_until_response(self) -> FinalResponseMessage:
+    def run_until_response(
+        self, allow_function_calls: bool = True
+    ) -> FinalResponseMessage:
         """Run until a response is generated
+
+        Args:
+            allow_function_calls (bool): Whether to allow function calls.
 
         Returns:
             FinalResponseMessage: The response
         """
         while True:
-            message = self.generate_message()
+            message = self.generate_message(
+                function_call="auto" if allow_function_calls else "none"
+            )
             if is_final_response_message(message):
                 return message
 
@@ -335,6 +363,6 @@ class Conversation:
         """
         self.add_message(prompt)
         # We can do type: ignore as we know we're forcing a function call
-        response: IntermediateResponseMessageType
-        response = self._generate_message({"name": function})  # type: ignore
-        return self.skills(response["function_call"])
+        response: FunctionCallMessage
+        response = self.generate_message({"name": function})  # type: ignore
+        return self.skills(response.function_call)
