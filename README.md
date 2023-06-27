@@ -37,15 +37,11 @@ class Unit(enum.Enum):
 
 @conversation.add_function()
 def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
-    """
-    Get the current weather in a given location.
+    """Get the current weather in a given location.
 
     Args:
         location (str): The city and state, e.g., San Francisco, CA
-        unit (Unit): The unit to use, e.g. fahrenheit or celsius
-
-    Returns:
-        dict: A dictionary containing the current weather
+        unit (Unit): The unit to use, e.g., fahrenheit or celsius
     """
     weather_info = {
         "location": location,
@@ -62,7 +58,7 @@ def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
 conversation.ask("What's the weather in San Francisco?")
 ```
 
-## Another usecase: data extraction
+## Another use case: data extraction
 
 1. Import the necessary modules:
 
