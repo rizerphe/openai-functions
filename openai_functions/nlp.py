@@ -2,7 +2,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from functools import partial, update_wrapper
-from typing import Callable, Generic, ParamSpec, Protocol, TypeVar, overload
+from typing import Callable, Generic, Protocol, TypeVar, overload
+from typing_extensions import ParamSpec
 
 from .conversation import Conversation
 from .functions.wrapper import FunctionWrapper
