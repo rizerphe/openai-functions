@@ -2,7 +2,7 @@
 
 The `openai-functions` Python project simplifies the usage of OpenAI's function calling feature. It abstracts away the complexity of parsing function signatures and docstrings by providing developers with a clean and intuitive interface.
 
-![Tests](https://github.com/rizerphe/openai-functions/actions/workflows/tests.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/rizerphe/openai-functions/badge.svg?branch=main)](https://coveralls.io/github/rizerphe/openai-functions?branch=main) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Tests](https://github.com/rizerphe/openai-functions/actions/workflows/tests.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/rizerphe/openai-functions/badge.svg?branch=main)](https://coveralls.io/github/rizerphe/openai-functions?branch=main) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/openai-functions.svg)](https://badge.fury.io/py/openai-functions)
 
 ## Installation
 
@@ -43,19 +43,28 @@ def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
         location (str): The city and state, e.g., San Francisco, CA
         unit (Unit): The unit to use, e.g., fahrenheit or celsius
     """
-    weather_info = {
+    return {
         "location": location,
         "temperature": "72",
         "unit": unit.value,
         "forecast": ["sunny", "windy"],
     }
-    return weather_info
 ```
 
 4. Ask the AI a question:
 
 ```python
 conversation.ask("What's the weather in San Francisco?")
+```
+
+## More barebones use - just schema generation and result parsing:
+
+```python
+from openai_functions import FunctionWrapper
+
+wrapper = FunctionWrapper(get_current_weather)
+schema = wrapper.schema
+result = wrapper({"location": "San Francisco, CA"})
 ```
 
 ## Another use case: data extraction
