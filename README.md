@@ -2,7 +2,7 @@
 
 The `openai-functions` Python project simplifies the usage of OpenAI's function calling feature. It abstracts away the complexity of parsing function signatures and docstrings by providing developers with a clean and intuitive interface.
 
-![Tests](https://github.com/rizerphe/openai-functions/actions/workflows/tests.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/rizerphe/openai-functions/badge.svg?branch=main)](https://coveralls.io/github/rizerphe/openai-functions?branch=main) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/openai-functions.svg)](https://badge.fury.io/py/openai-functions)
+![Tests](https://github.com/rizerphe/openai-functions/actions/workflows/tests.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/rizerphe/openai-functions/badge.svg?branch=main)](https://coveralls.io/github/rizerphe/openai-functions?branch=main) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/openai-functions.svg)](https://badge.fury.io/py/openai-functions) [![Documentation Status](https://readthedocs.org/projects/openai-functions/badge/?version=latest)](https://openai-functions.readthedocs.io/en/latest/?badge=latest)
 
 ## Installation
 
@@ -61,6 +61,8 @@ response = conversation.ask("What's the weather in San Francisco?")
 # The current weather in San Francisco is 72 degrees Fahrenheit and it is sunny and windy.
 ```
 
+You can read more about `Conversation`s [here](https://openai-functions.readthedocs.io/en/latest/conversation.html).
+
 ## More barebones use - just schema generation and result parsing:
 
 ```python
@@ -70,6 +72,8 @@ wrapper = FunctionWrapper(get_current_weather)
 schema = wrapper.schema
 result = wrapper({"location": "San Francisco, CA"})
 ```
+
+Or you could use [skills](https://openai-functions.readthedocs.io/en/latest/skills.html).
 
 ## Another use case: data extraction
 
@@ -100,6 +104,8 @@ class Person:
 ```python
 person = Person.from_natural_language("I'm Jack and I'm 20 years old.")
 ```
+
+You can read more about `@nlp` [here](https://openai-functions.readthedocs.io/en/latest/nlp_interface.html).
 
 Note: mypy does not parse class decorators ([#3135](https://github.com/python/mypy/issues/3135)), so you might have trouble getting type checking when using it like this. Consider using something like `nlp(Person).from_natural_language` to get proper type support.
 
