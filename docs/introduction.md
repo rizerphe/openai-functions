@@ -26,13 +26,13 @@ pip install openai-functions
 Now, there are **three ways you can use this** - start with just one:
 
 - For managing conversations, use the [conversational](#your-first-conversation) interface
-- For data extraction etc, for working with just one function, use the [data extraction](extracting-data) interface
+- For data extraction etc., for working with just one function, use the [data extraction](extracting-data) interface
 - For just generating schemas and parsing call results, nothing more, use [raw schema generation](just-generating-the-schemas) next.
 
 (your-first-conversation)=
 ## Your first conversation
 
-The easiest way to use `openai-functions` is through the [conversation](conversation) interface. For that, you first import all of the necessary modules and initialize openai with your api key:
+The easiest way to use `openai-functions` is through the [conversation](conversation) interface. For that, you first import all of the necessary modules and initialize openai with your API key:
 
 ```python
 import enum
@@ -48,7 +48,7 @@ Then, we can create a [conversation](openai_functions.Conversation).
 conversation = Conversation()
 ```
 
-A conversation contains our and the AI's messages, the functions we provide, as well as a set of methods for calling the AI with our functions. Now, we can add our functions to the conversation using the `@conversation.add_function` decorator to make them available for the AI:
+A conversation contains our and the AI's messages, the functions we provide, and a set of methods for calling the AI with our functions. Now, we can add our functions to the conversation using the `@conversation.add_function` decorator to make them available for the AI:
 
 ```python
 class Unit(enum.Enum):
@@ -71,7 +71,7 @@ def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
     }
 ```
 
-Note that the function _must_ have type annotations for all arguments, and this includes extended type annotations for lists/dictionaries (for example, `list[int]` and not just `list`), otherwise the tool won't be able to generate a schema. Our conversation is now ready for function calling. The easiest way to do so is through the `conversation.ask` method. This method will repeatedly ask the AI for a response, running function calls, until the AI responds with text to return:
+Note that the function _must_ have type annotations for all arguments, including extended type annotations for lists/dictionaries (for example, `list[int]` and not just `list`); otherwise the tool won't be able to generate a schema. Our conversation is now ready for function calling. The easiest way to do so is through the `conversation.ask` method. This method will repeatedly ask the AI for a response, running function calls, until the AI responds with text to return:
 
 ```python
 response = conversation.ask("What's the weather in San Francisco?")
@@ -79,12 +79,12 @@ response = conversation.ask("What's the weather in San Francisco?")
 # The current weather in San Francisco is 72 degrees Fahrenheit and it is sunny and windy.
 ```
 
-The AI will probably (nobody can say for sure) then return a function call with the arguments of `{"location": "San Francisco, CA"}`, which will get translated to `get_current_weather("San Francisco, CA")`. The function response will be serialized and sent back to the AI, and a text description will be returned. You can read more about how to work with conversations [here](conversation).
+The AI will probably (nobody can say for sure) then return a function call with the arguments of `{"location": "San Francisco, CA"}`, which will get translated to `get_current_weather("San Francisco, CA")`. The function response will be serialized and sent back to the AI, and the AI will return a text description. You can read more about how to work with conversations [here](conversation).
 
 (extracting-data)=
 ## Extracting data
 
-There are two common uses for function calls: assistant-type applications, which is what conversations are for, and data extraction, where you force the AI to call a specific function and to fill in the arguments. For data extraction, we have the [nlp interface](nlp_interface). It acts as a decorator, turning a function (or a class, including a dataclass) into a [wrapper](openai_functions.Wrapper) object, exposing methods for calling a function with natural language and annotating the call result with an AI response. To use it, you first import all of the necessary modules and initialize openai with your api key:
+There are two common uses for function calls: assistant-type applications, which is what conversations are for, and data extraction, where you force the AI to call a specific function and fill in the arguments. We have the [nlp interface](nlp_interface) for data extraction. It acts as a decorator, turning a function (or a class, including a dataclass) into a [wrapper](openai_functions.Wrapper) object, exposing methods for calling a function with natural language and annotating the call result with an AI response. To use it, you first import all of the necessary modules and initialize openai with your API key:
 
 ```python
 from dataclasses import dataclass
@@ -121,7 +121,7 @@ The tool will call the AI, telling it to call the function `Person`. It will the
 (just-generating-the-schemas)=
 ## Just generating the schemas
 
-If you just want to generate the schemas, you can use a [FunctionWrapper](openai_functions.FunctionWrapper):
+If you want to generate the schemas, you can use a [FunctionWrapper](openai_functions.FunctionWrapper):
 
 ```python
 from openai_functions import FunctionWrapper
@@ -131,7 +131,7 @@ schema = wrapper.schema
 result = wrapper({"location": "San Francisco, CA"})
 ```
 
-This creates an object that can both return you a schema of a function and provide the function with the properly parsed arguments. Another tool is a [FunctionSet](openai_functions.BasicFunctionSet) that allows you to aggregate multiple functions into one schema:
+This creates an object that can both return you a schema of a function and provide the function with properly parsed arguments. Another tool is a [FunctionSet](openai_functions.BasicFunctionSet) that allows you to aggregate multiple functions into one schema:
 
 ```python
 from openai_functions import BasicFunctionSet

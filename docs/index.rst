@@ -1,18 +1,13 @@
-.. openai-functions documentation master file, created by
-   sphinx-quickstart on Fri Jun 30 19:32:59 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to openai-functions's documentation!
 ============================================
 
 
-The `openai-functions` library simplifies the usage of OpenAI's function calling feature. It abstracts away the complexity of parsing function signatures and docstrings by providing developers with a clean and intuitive interface.
+The ``openai-functions`` library simplifies the usage of OpenAI's function calling feature. It abstracts away the complexity of parsing function signatures and docstrings by providing developers with a clean and intuitive interface.
 
 Where to start
 --------------
 
-Either way, you'll want to install `openai-functions`:
+Either way, you'll want to install ``openai-functions``:
 
 .. code-block:: bash
 

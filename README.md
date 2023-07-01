@@ -14,7 +14,7 @@ pip install openai-functions
 
 ## Usage
 
-1. Import the necessary modules and provide your api key:
+1. Import the necessary modules and provide your API key:
 
 ```python
 import enum
@@ -61,7 +61,7 @@ response = conversation.ask("What's the weather in San Francisco?")
 # The current weather in San Francisco is 72 degrees Fahrenheit and it is sunny and windy.
 ```
 
-You can read more about `Conversation`s [here](https://openai-functions.readthedocs.io/en/latest/conversation.html).
+You can read more about how to use `Conversation` [here](https://openai-functions.readthedocs.io/en/latest/conversation.html).
 
 ## More barebones use - just schema generation and result parsing:
 
@@ -77,7 +77,7 @@ Or you could use [skills](https://openai-functions.readthedocs.io/en/latest/skil
 
 ## Another use case: data extraction
 
-1. Import the necessary modules and provide your api key:
+1. Import the necessary modules and provide your API key:
 
 ```python
 from dataclasses import dataclass
