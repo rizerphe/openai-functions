@@ -14,12 +14,14 @@ pip install openai-functions
 
 ## Usage
 
-1. Import the necessary modules:
+1. Import the necessary modules and provide your api key:
 
 ```python
 import enum
 import openai
 from openai_functions import Conversation
+
+openai.api_key = "<YOUR_API_KEY>"
 ```
 
 2. Create a `Conversation` instance:
@@ -54,7 +56,9 @@ def get_current_weather(location: str, unit: Unit = Unit.FAHRENHEIT) -> dict:
 4. Ask the AI a question:
 
 ```python
-conversation.ask("What's the weather in San Francisco?")
+response = conversation.ask("What's the weather in San Francisco?")
+# Should return something like:
+# The current weather in San Francisco is 72 degrees Fahrenheit and it is sunny and windy.
 ```
 
 ## More barebones use - just schema generation and result parsing:
@@ -69,12 +73,14 @@ result = wrapper({"location": "San Francisco, CA"})
 
 ## Another use case: data extraction
 
-1. Import the necessary modules:
+1. Import the necessary modules and provide your api key:
 
 ```python
 from dataclasses import dataclass
 import openai
 from openai_functions import nlp
+
+openai.api_key = "<YOUR_API_KEY>"
 ```
 
 3. Define your data container using the `@nlp` decorator:
@@ -89,7 +95,7 @@ class Person:
     age: int
 ```
 
-4. Ask the AI for a summary of the data:
+4. Ask the AI for the extracted data:
 
 ```python
 person = Person.from_natural_language("I'm Jack and I'm 20 years old.")
@@ -101,7 +107,7 @@ Note: mypy does not parse class decorators ([#3135](https://github.com/python/my
 
 `openai-functions` takes care of the following tasks:
 
-- Parsing the function signatures and docstrings.
+- Parsing the function signatures (with type annotations) and docstrings.
 - Sending the conversation and function descriptions to the OpenAI model.
 - Deciding whether to call a function based on the model's response.
 - Calling the appropriate function with the provided arguments.

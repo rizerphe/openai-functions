@@ -3,12 +3,17 @@ from .conversation import Conversation
 from .functions import (
     BasicFunctionSet,
     FunctionNotFoundError,
+    FunctionResult,
     FunctionSet,
     FunctionWrapper,
+    MutableFunctionSet,
+    OpenAIFunction,
+    RawFunctionResult,
+    UnionSkillSet,
     WrapperConfig,
 )
-from .nlp import nlp
-from .openai_types import Message
+from .nlp import NaturalLanguageAnnotated, Wrapper, nlp
+from .openai_types import FinalResponseMessage, FunctionCall, GenericMessage, Message
 from .parsers import ArgSchemaParser, defargparsers
 
 __all__ = [
@@ -19,7 +24,17 @@ __all__ = [
     "defargparsers",
     "ArgSchemaParser",
     "FunctionWrapper",
-    "nlp",
-    "Message",
+    "MutableFunctionSet",
+    "OpenAIFunction",
+    "FunctionResult",
+    "RawFunctionResult",
+    "UnionSkillSet",
     "WrapperConfig",
+    "NaturalLanguageAnnotated",
+    "nlp",
+    "Wrapper",
+    "FinalResponseMessage",
+    "FunctionCall",
+    "GenericMessage",
+    "Message",
 ]

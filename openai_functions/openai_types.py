@@ -15,7 +15,12 @@ if TYPE_CHECKING:
 
 
 class FunctionCall(TypedDict):
-    """A type for OpenAI function calls"""
+    """A container for OpenAI function calls
+
+    Attributes:
+        name (str): The name of the function
+        arguments (str): The arguments of the function, in JSON format
+    """
 
     name: str
     arguments: str
@@ -172,7 +177,7 @@ class Message:
 
 @runtime_checkable
 class GenericMessage(Protocol):
-    """A container for OpenAI messages"""
+    """A container protocol for OpenAI messages"""
 
     message: MessageType
 
@@ -229,7 +234,11 @@ class GenericMessage(Protocol):
 
 
 class FinalResponseMessage(GenericMessage, Protocol):
-    """A container for OpenAI final response messages"""
+    """A container for OpenAI final response messages
+
+    Inherited from GenericMessage, acts the same, just restricts
+    the message to have content and not be a function call
+    """
 
     message: FinalResponseMessageType  # type: ignore
 

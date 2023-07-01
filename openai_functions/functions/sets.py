@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class FunctionSet(ABC):
-    """A skill set"""
+    """A skill set - a provider for a functions schema and a function runner"""
 
     @property
     @abstractmethod
@@ -30,6 +30,21 @@ class FunctionSet(ABC):
         Raises:
             FunctionNotFoundError: If the function is not found
         """
+
+    def __call__(self, input_data: FunctionCall) -> JsonType:
+        """Run the function with the given input data
+
+        Args:
+            input_data (FunctionCall): The input data from OpenAI
+
+        Returns:
+            JsonType: Your function's raw result
+        """
+        return self.run_function(input_data).result
+
+
+class MutableFunctionSet(FunctionSet):
+    """A skill set that can be modified - functions can be added and removed"""
 
     @abstractmethod
     def _add_function(self, function: OpenAIFunction) -> None:
@@ -125,14 +140,3 @@ class FunctionSet(ABC):
             self._remove_function(function.name)
             return
         self._remove_function(function.__name__)
-
-    def __call__(self, input_data: FunctionCall) -> JsonType:
-        """Run the function with the given input data
-
-        Args:
-            input_data (FunctionCall): The input data from OpenAI
-
-        Returns:
-            JsonType: Your function's raw result
-        """
-        return self.run_function(input_data).result

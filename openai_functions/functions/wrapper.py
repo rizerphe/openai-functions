@@ -14,7 +14,20 @@ if TYPE_CHECKING:
 
 @dataclass
 class WrapperConfig:
-    """Configuration for a FunctionWrapper"""
+    """Configuration for a FunctionWrapper, one that specifies the parsers for the
+    arguments and the treatment of the return value.
+
+    Args:
+        parsers (list[Type[ArgSchemaParser]] | None): The parsers for the arguments.
+            defaults to `defargparsers`, which support all JSON types, as well
+            as enums and dataclasses
+        save_return (bool): Whether to send the return value back to the AI
+        serialize (bool): Whether to serialize the return value; if False, the
+            return value must be a string
+        interpret_as_response (bool): Whether to interpret the return value as a
+            response from the agent directly, or to base the response on the
+            return value
+    """
 
     parsers: list[Type[ArgSchemaParser]] | None = None
     save_return: bool = True
@@ -23,7 +36,17 @@ class WrapperConfig:
 
 
 class FunctionWrapper:
-    """Wraps a function for jsonschema io"""
+    """Wraps a function for jsonschema io
+
+    Provides a function schema and a function runner - the function schema is
+    generated from the function's docstring and argument type annotations, and
+    the function runner parses the arguments from JSON and runs the function.
+    They are accessed via the `schema` property and a `__call__` method respectively.
+
+    Args:
+        func (Callable[..., JsonType]): The function to wrap
+        config (WrapperConfig | None, optional): The configuration for the wrapper.
+    """
 
     def __init__(
         self,

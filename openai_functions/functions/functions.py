@@ -12,7 +12,11 @@ if TYPE_CHECKING:
 
 @runtime_checkable
 class OpenAIFunction(Protocol):
-    """A protocol for OpenAI functions"""
+    """A protocol for OpenAI functions.
+
+    Requires a __call__ method, a schema property, and a name property,
+    as well as those that define the treatment of the return value.
+    """
 
     def __call__(self, arguments: dict[str, JsonType]) -> JsonType:
         ...

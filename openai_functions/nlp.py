@@ -16,7 +16,7 @@ T = TypeVar("T")
 
 @dataclass
 class NaturalLanguageAnnotated(Generic[T]):
-    """A natural language annotated object"""
+    """A natural language annotated function return value"""
 
     function_result: T
     annotation: str
@@ -26,7 +26,7 @@ class NaturalLanguageAnnotated(Generic[T]):
 class DecoratorProtocol(
     Protocol[Param, Return]
 ):  # pylint: disable=too-few-public-methods
-    """A protocol for decorators"""
+    """A protocol for the nlp decorator"""
 
     def __call__(
         self,
@@ -39,7 +39,7 @@ class DecoratorProtocol(
 
 
 class Wrapper(Generic[Param, Return]):
-    """A wrapper for a function"""
+    """A wrapper for a function that provides a natural language interface"""
 
     def __init__(
         self,
@@ -68,7 +68,7 @@ class Wrapper(Generic[Param, Return]):
             )
 
     def from_natural_language(self, prompt: str) -> Return:
-        """Run the function with the given prompt
+        """Run the function with the given natural language input
 
         Args:
             prompt (str): The prompt to use
@@ -86,7 +86,7 @@ class Wrapper(Generic[Param, Return]):
             prompt (str): The prompt to use
 
         Returns:
-            The response from the AI
+            str: The response from the AI
         """
         self._initialize_conversation()
         self.conversation.add_message(prompt)
@@ -99,13 +99,14 @@ class Wrapper(Generic[Param, Return]):
     def natural_language_annotated(
         self, prompt: str
     ) -> NaturalLanguageAnnotated[Return]:
-        """Run the function and respond to the user with natural language
+        """Run the function and respond to the user with natural language as well as
+        the raw function result
 
         Args:
             prompt (str): The prompt to use
 
         Returns:
-            The response from the AI
+            NaturalLanguageAnnotated: The response from the AI
         """
         self._initialize_conversation()
         function_result = self.conversation.run(self.openai_function.name, prompt)
@@ -173,8 +174,8 @@ def nlp(
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
 
     Returns:
-        The function, with natural language input, or a decorator to add natural
-        language input to a function
+        Wrapper | DecoratorProtocol: The function, with natural language input, or a
+        decorator to add natural language input to a function
     """
 
     if function is None:

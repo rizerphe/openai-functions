@@ -6,7 +6,7 @@ class OpenAIFunctionsError(Exception):
 
 
 class FunctionNotFoundError(OpenAIFunctionsError):
-    """The function was not found."""
+    """The function was not found in the given skillset."""
 
 
 class NonSerializableOutputError(OpenAIFunctionsError):

@@ -5,15 +5,21 @@ from typing import TYPE_CHECKING
 
 from .exceptions import FunctionNotFoundError
 from .functions import FunctionResult, OpenAIFunction, RawFunctionResult
-from .sets import FunctionSet
+from .sets import MutableFunctionSet
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
     from ..openai_types import FunctionCall
 
 
-class BasicFunctionSet(FunctionSet):
-    """A skill set"""
+class BasicFunctionSet(MutableFunctionSet):
+    """A skill set - a set of OpenAIFunction objects ready to be called.
+    Inherited from `MutableFunctionSet`, therefore you can add and remove functions
+    by using the `@add_function` and `remove_function` methods.
+
+    Args:
+        functions (list[OpenAIFunction] | None): The functions to initialize with.
+    """
 
     def __init__(
         self,
@@ -23,10 +29,10 @@ class BasicFunctionSet(FunctionSet):
 
     @property
     def functions_schema(self) -> list[JsonType]:
-        """Get the functions schema
+        """Get the functions schema, in the format OpenAI expects
 
         Returns:
-            JsonType: The functions schema
+            JsonType: The schema of all the available functions
         """
         return [function.schema for function in self.functions]
 
@@ -47,13 +53,13 @@ class BasicFunctionSet(FunctionSet):
         return FunctionResult(function.name, result, function.interpret_as_response)
 
     def find_function(self, function_name: str) -> OpenAIFunction:
-        """Find a function
+        """Find a function in the skillset
 
         Args:
             function_name (str): The function name
 
         Returns:
-            OpenAIFunction: The function
+            OpenAIFunction: The function of the given name
 
         Raises:
             FunctionNotFoundError: If the function is not found
@@ -66,25 +72,24 @@ class BasicFunctionSet(FunctionSet):
     def get_function_result(
         self, function: OpenAIFunction, arguments: dict[str, JsonType]
     ) -> RawFunctionResult | None:
-        """Get the result of a function
+        """Get the result of a function's execution
 
         Args:
-            function (OpenAIFunction): The function
-            arguments (dict[str, JsonType]): The arguments
+            function (OpenAIFunction): The function to run
+            arguments (dict[str, JsonType]): The arguments to run the function with
 
         Returns:
-            RawFunctionResult | None: The result
+            RawFunctionResult | None: The result of the function, or None if the
+                function does not save its return value
         """
         result = function(arguments)
 
         if function.save_return:
-            if function.serialize:
-                return RawFunctionResult(result)
-            return RawFunctionResult(result)
+            return RawFunctionResult(result, serialize=function.serialize)
         return None
 
     def _add_function(self, function: OpenAIFunction) -> None:
-        """Add a function
+        """Add a function to the skillset
 
         Args:
             function (OpenAIFunction): The function
@@ -92,7 +97,7 @@ class BasicFunctionSet(FunctionSet):
         self.functions.append(function)
 
     def _remove_function(self, name: str) -> None:
-        """Remove a function
+        """Remove a function from the skillset
 
         Args:
             name (str): The name of the function to remove

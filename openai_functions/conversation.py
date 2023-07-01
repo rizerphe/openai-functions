@@ -31,7 +31,10 @@ if TYPE_CHECKING:
 
 
 class Conversation:
-    """A class for running OpenAI functions"""
+    """A class representing a single conversation with the AI
+
+    Contains the messages sent and received, and the skillset used.
+    """
 
     def __init__(
         self,
@@ -43,11 +46,11 @@ class Conversation:
         self.model = model
 
     @property
-    def functions_schema(self) -> JsonType:
-        """Get the functions schema
+    def functions_schema(self) -> list[JsonType]:
+        """Get the functions schema for the conversation
 
         Returns:
-            JsonType: The functions schema
+            list[JsonType]: The functions schema
         """
         return self.skills.functions_schema
 
@@ -60,7 +63,7 @@ class Conversation:
         self.messages.append(message)
 
     def add_message(self, message: GenericMessage | MessageType | str) -> None:
-        """Add a message
+        """Add a message to the end of the conversation
 
         Args:
             message (GenericMessage | MessageType | str): The message
@@ -71,7 +74,7 @@ class Conversation:
             self._add_message(Message(message))
 
     def add_messages(self, messages: list[GenericMessage | MessageType]) -> None:
-        """Add messages
+        """Add multiple messages to the end of the conversation
 
         Args:
             messages (list[GenericMessage | MessageType]): The messages
@@ -91,7 +94,7 @@ class Conversation:
         return self.messages.pop(index)
 
     def clear_messages(self) -> None:
-        """Clear the messages"""
+        """Fully clear the messages, but keep the skillset"""
         self.messages = []
 
     @overload
@@ -132,7 +135,7 @@ class Conversation:
         return response["choices"][0]["message"]  # type: ignore
 
     def substitute_last_with_function_result(self, result: str) -> None:
-        """Substitute the last message with the result
+        """Substitute the last message with the result of a function
 
         Args:
             result (str): The function result
@@ -145,13 +148,14 @@ class Conversation:
         self.add_message(response)
 
     def add_function_result(self, function_result: FunctionResult) -> bool:
-        """Add a function result
+        """Add a function execution result to the chat
 
         Args:
-            function_result (FunctionResult): The function result
+            function_result (FunctionResult): The function execution result
 
         Returns:
             bool: Whether the function result was added
+                (whether save_return was True)
         """
         if function_result.content is None:
             return False
@@ -166,7 +170,12 @@ class Conversation:
     def add_or_substitute_function_result(
         self, function_result: FunctionResult
     ) -> bool:
-        """Add or substitute a function result
+        """Add or substitute a function execution result
+
+        If the function has interpret_as_response set to True, the last message,
+        which is assumed to be a function call, will be replaced with the function
+        execution result. Otherwise, the function execution result will be added
+        to the chat.
 
         Args:
             function_result (FunctionResult): The function result
@@ -180,7 +189,7 @@ class Conversation:
         if function_result.substitute:
             if function_result.content is None:
                 raise TypeError(
-                    f"Function {function_result.name} returned a None value"
+                    f"Function {function_result.name} did not provide a return"
                 )
             self.substitute_last_with_function_result(function_result.content)
             return True
@@ -199,14 +208,18 @@ class Conversation:
             TypeError: If the function returns a None value
 
         Returns:
-            bool: Whether the function result was added
+            bool: Whether the function result was added to the chat
+                (whether save_return was True)
         """
         return self.add_or_substitute_function_result(
             self.skills.run_function(function_call)
         )
 
     def run_function_if_needed(self) -> bool:
-        """Run a function if needed
+        """Run a function if the last message was a function call
+
+        Might run the function over and over again if the function
+        does not save the return.
 
         Returns:
             bool: Whether the function result was added
@@ -223,7 +236,9 @@ class Conversation:
     def generate_message(
         self, function_call: OpenAiFunctionCallInput = "auto"
     ) -> GenericMessage:
-        """Generate the next message
+        """Generate the next message. Will run a function if the last message
+        was a function call and the function call is not being overridden;
+        if the function does not save the return a message will still be generated.
 
         Args:
             function_call (OpenAiFunctionCallInput): The function call
@@ -241,13 +256,14 @@ class Conversation:
     def run_until_response(
         self, allow_function_calls: bool = True
     ) -> FinalResponseMessage:
-        """Run until a response is generated
+        """Run functions query the AI until a response is generated
 
         Args:
-            allow_function_calls (bool): Whether to allow function calls.
+            allow_function_calls (bool): Whether to allow the AI to call functions
 
         Returns:
-            FinalResponseMessage: The response
+            FinalResponseMessage: The final response, either from the AI or a function
+                that has interpret_as_response set to True
         """
         while True:
             message = self.generate_message(
@@ -292,17 +308,17 @@ class Conversation:
         Callable[[Callable[..., JsonType]], Callable[..., JsonType]]
         | Callable[..., JsonType]
     ):
-        """Add a function
+        """Add a function to the functions available to the AI
 
         Args:
-            function (OpenAIFunction | Callable[..., JsonType]): The function
-            save_return (bool): Whether to send the return value of this
-                function to the AI. Defaults to True.
-            serialize (bool): Whether to serialize the return value of this
-                function. Defaults to True. Otherwise, the return value must be a
-                string.
-            interpret_as_response (bool): Whether to interpret the return
-                value of this function as a response of the agent. Defaults to False.
+            function (OpenAIFunction | Callable[..., JsonType]): The function to add
+            save_return (bool): Whether to send the return value of this function back
+                to the AI. Defaults to True.
+            serialize (bool): Whether to serialize the return value of this function.
+            Defaults to True. Otherwise, the return value must be a string.
+            interpret_as_response (bool): Whether to interpret the return value of this
+                function as a response of the agent, replacing the function call
+                message. Defaults to False.
 
         Returns:
             Callable[[Callable[..., JsonType]], Callable[..., JsonType]]: A decorator
@@ -332,7 +348,7 @@ class Conversation:
         self.skills.remove_function(function)
 
     def ask(self, question: str) -> str:
-        """Ask the AI a question
+        """Ask the AI a question, running until a response is generated
 
         Args:
             question (str): The question
@@ -344,7 +360,7 @@ class Conversation:
         return self.run_until_response().content
 
     def add_skill(self, skill: FunctionSet) -> None:
-        """Add a skill
+        """Add a skill to those available to the AI
 
         Args:
             skill (FunctionSet): The skill to add

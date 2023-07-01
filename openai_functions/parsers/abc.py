@@ -12,7 +12,11 @@ S = TypeVar("S")
 
 
 class ArgSchemaParser(ABC, Generic[T]):
-    """A parser for a specific argument type"""
+    """An abstract parser for a specific argument type
+
+    Both converts the argument definition to a JSON schema and parses the argument value
+    from JSON.
+    """
 
     def __init__(
         self, argtype: Type[T], rec_parsers: list[Type[ArgSchemaParser]]
