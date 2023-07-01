@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "openai-functions"
-version = "0.6.3"
-description = "Simplifies the usage of OpenAI's function calling."
+version = "0.6.4"
+description = "Simplifies the usage of OpenAI ChatGPT's function calling by generating the schemas and parsing OpenAI's responses for you."
 authors = ["rizerphe <44440399+rizerphe@users.noreply.github.com>"]
 readme = "README.md"
+homepage = "https://github.com/rizerphe/openai-functions"
+documentation = "https://openai-functions.readthedocs.io/"
+keywords = ["nlp", "openai", "openai-api", "chatgpt", "chatgpt-api", "wrapper", "functions", "chatgpt-api", "openai-functions", "chatgpt-functions", "typing", "docstring", "docstrings", "decorators", "signatures", "parsing"]
 license = "MIT"
 packages = [{include = "openai_functions"}]
 
