@@ -57,3 +57,26 @@ The arguments passed to `add_function` are the same as those an [OpenAIFunction]
 - `interpret_as_response` - whether to interpret the return value of the function (the serialized one if `serialize` is set to True) as the response from the AI, replacing the function call
 
 You can read more about how to use skills [here](skills).
+
+## Generating messages
+
+The point of a conversation is to use the AI to generate responses. The easiest way to do this is through the `ask` method:
+
+```python
+response = conversation.ask("Your input data")
+```
+
+The tool will then repeatedly get responses from OpenAI and run your functions until a full response is generated. Alternatively, if you don't want to add another message to the conversation, you can use the `run_until_response` method that returns a [FinalResponseMessage](openai_functions.FinalResponseMessage) object:
+
+```python
+generated_message = conversation.run_until_response()
+further_comment = conversation.run_until_response(allow_function_calls=False)
+```
+
+If you want to use the conversation to run a specific function more directly and get the execution result, you can use the `run` method, optionally also providing another message:
+
+```python
+raw_weather_result = conversation.run("get_weather", "What's the weather in San Francisco?")
+```
+
+However, for most usecases [@nlp](nlp_interface) should be sufficient; consider using it.
