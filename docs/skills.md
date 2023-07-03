@@ -50,6 +50,30 @@ union_skill.add_skill(skill)
 
 It still supports everything a [BasicFunctionSet](openai_functions.BasicFunctionSet), though; it can have a few functions inherent to it while still combining the other skillsets.
 
+## Togglable skillset
+
+Specifically for applications where there are a lot of functions that can be separated into categories (e.g. general assistant applications), there's [TogglableSet](openai_functions.TogglableSet). It allows you to give the AI a function that _enables_ a set of other functions:
+
+```python
+skill = TogglableSet("enable_email", "Enable the email features")
+
+@skill.add_function
+def send_email(recipient_address: str, content: str):
+    """Send an email
+
+    Args:
+        recipient_address (str): The email address
+        content (str): The full text content of the email
+    """
+    return "Sent successfully"
+
+@skill.add_function
+def list_emails():
+    return [{"from": "jack@example.com", "content": "Wanna come over?"}]
+```
+
+The AI is then expected to run the `enable_email` function just to get to the point of knowing what the other functions are.
+
 ## Developing your own
 
 Skills are extensible; you can build your own by inheriting them from the [FunctionSet](openai_functions.FunctionSet) base class. You then have to provide these methods and properties:

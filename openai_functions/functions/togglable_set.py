@@ -42,7 +42,10 @@ class TogglableSet(BasicFunctionSet):
         """Get the schema for the enable function."""
         schema: dict[str, JsonType] = {
             "name": self.enable_function_name,
-            "parameters": {},
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            },
         }
         if self.enable_function_description:
             schema["description"] = self.enable_function_description

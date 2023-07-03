@@ -9,6 +9,7 @@ from .functions import (
     MutableFunctionSet,
     OpenAIFunction,
     RawFunctionResult,
+    TogglableSet,
     UnionSkillSet,
     WrapperConfig,
 )
@@ -28,6 +29,7 @@ __all__ = [
     "OpenAIFunction",
     "FunctionResult",
     "RawFunctionResult",
+    "TogglableSet",
     "UnionSkillSet",
     "WrapperConfig",
     "NaturalLanguageAnnotated",
