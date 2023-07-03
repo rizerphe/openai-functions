@@ -1,9 +1,10 @@
 """The exceptions associated with function handling."""
 
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
-from .json_type import JsonType
+if TYPE_CHECKING:
+    from .json_type import JsonType
 
 
 class OpenAIFunctionsError(Exception):
