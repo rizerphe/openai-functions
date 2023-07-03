@@ -38,26 +38,34 @@ class DecoratorProtocol(
         ...
 
 
+@dataclass
+class NLPWrapperConfig:
+    """A configuration for the nlp decorator"""
+
+    name: str | None = None
+    description: str | None = None
+    serialize: bool = True
+
+    model: str = "gpt-3.5-turbo-0613"
+    system_prompt: str | None = None
+
+
 class Wrapper(Generic[Param, Return]):
     """A wrapper for a function that provides a natural language interface"""
 
     def __init__(
         self,
         origin: Callable[..., Return],
-        system_prompt: str | None = None,
-        model: str = "gpt-3.5-turbo-0613",
-        name: str | None = None,
-        description: str | None = None,
-        serialize: bool = True,
+        config: NLPWrapperConfig,
     ) -> None:
         self.origin = origin
-        self.system_prompt = system_prompt
-        self.conversation = Conversation(model=model)
+        self.config = config
+        self.conversation = Conversation(model=config.model)
         self.openai_function = FunctionWrapper(
             self.origin,
-            WrapperConfig(serialize=serialize),
-            name=name,
-            description=description,
+            WrapperConfig(serialize=config.serialize),
+            name=config.name,
+            description=config.description,
         )
         self.conversation.add_function(self.openai_function)
 
@@ -67,11 +75,11 @@ class Wrapper(Generic[Param, Return]):
     def _initialize_conversation(self) -> None:
         """Initialize the conversation"""
         self.conversation.clear_messages()
-        if self.system_prompt is not None:
+        if self.config.system_prompt is not None:
             self.conversation.add_message(
                 {
                     "role": "system",
-                    "content": self.system_prompt,
+                    "content": self.config.system_prompt,
                 }
             )
 
@@ -153,17 +161,16 @@ def _nlp(
         The function, with natural language input, or a decorator to add natural
         language input to a function
     """
-
-    wrapped: Wrapper[Param, Return] = Wrapper(
+    return Wrapper(
         function,
-        system_prompt=system_prompt,
-        model=model,
-        name=name,
-        description=description,
-        serialize=serialize,
+        NLPWrapperConfig(
+            system_prompt=system_prompt,
+            model=model,
+            name=name,
+            description=description,
+            serialize=serialize,
+        ),
     )
-
-    return wrapped
 
 
 @overload

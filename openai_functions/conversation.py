@@ -4,7 +4,7 @@ import time
 from typing import Any, Callable, Literal, TYPE_CHECKING, overload
 
 import openai
-from openai.error import RateLimitError
+import openai.error
 
 from .functions.union import UnionSkillSet
 from .openai_types import (
@@ -138,7 +138,7 @@ class Conversation:
         while True:
             try:
                 response = self._generate_raw_message(function_call)
-            except RateLimitError as error:
+            except openai.error.RateLimitError as error:
                 if retries == 0:
                     raise
                 retries -= 1

@@ -47,12 +47,13 @@ class BasicFunctionSet(MutableFunctionSet):
 
         Raises:
             FunctionNotFoundError: If the function is not found
+            InvalidJsonError: If the arguments are not valid JSON
         """
         function = self.find_function(input_data["name"])
         try:
             arguments = json.loads(input_data["arguments"])
-        except json.decoder.JSONDecodeError as e:
-            raise InvalidJsonError(input_data["arguments"]) from e
+        except json.decoder.JSONDecodeError as err:
+            raise InvalidJsonError(input_data["arguments"]) from err
         result = self.get_function_result(function, arguments)
         return FunctionResult(
             function.name, result, function.remove_call, function.interpret_as_response

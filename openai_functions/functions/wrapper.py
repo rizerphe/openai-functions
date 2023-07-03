@@ -241,6 +241,9 @@ class FunctionWrapper:
         Args:
             arguments (dict[str, JsonType]): The arguments to parse
 
+        Raises:
+            BrokenSchemaError: If the arguments do not match the schema
+
         Returns:
             OrderedDict[str, Any]: The parsed arguments
         """
@@ -252,8 +255,8 @@ class FunctionWrapper:
                 (name, argument_parsers[name].parse_value(value))
                 for name, value in arguments.items()
             )
-        except KeyError as e:
-            raise BrokenSchemaError(arguments, self.arguments_schema) from e
+        except KeyError as err:
+            raise BrokenSchemaError(arguments, self.arguments_schema) from err
 
     def __call__(self, arguments: dict[str, JsonType]) -> Any:
         """Call the wrapped function
