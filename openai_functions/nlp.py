@@ -71,23 +71,27 @@ class Wrapper(Generic[Param, Return]):
                 }
             )
 
-    def from_natural_language(self, prompt: str) -> Return:
+    def from_natural_language(self, prompt: str, retries: int | None = 1) -> Return:
         """Run the function with the given natural language input
 
         Args:
             prompt (str): The prompt to use
+            retries (int | None): The number of retries; if None, will retry
+                indefinitely
 
         Returns:
             The result of the original function
         """
         self._initialize_conversation()
-        return self.conversation.run(self.openai_function.name, prompt)
+        return self.conversation.run(self.openai_function.name, prompt, retries=retries)
 
-    def natural_language_response(self, prompt: str) -> str:
+    def natural_language_response(self, prompt: str, retries: int | None = 1) -> str:
         """Run the function and respond to the user with natural language
 
         Args:
             prompt (str): The prompt to use
+            retries (int | None): The number of retries; if None, will retry
+                indefinitely
 
         Returns:
             str: The response from the AI
@@ -97,24 +101,28 @@ class Wrapper(Generic[Param, Return]):
         self.conversation.generate_message(
             function_call={"name": self.openai_function.name}
         )
-        response = self.conversation.run_until_response(False)
+        response = self.conversation.run_until_response(False, retries=retries)
         return response.content
 
     def natural_language_annotated(
-        self, prompt: str
+        self, prompt: str, retries: int | None = 1
     ) -> NaturalLanguageAnnotated[Return]:
         """Run the function and respond to the user with natural language as well as
         the raw function result
 
         Args:
             prompt (str): The prompt to use
+            retries (int | None): The number of retries; if None, will retry
+                indefinitely
 
         Returns:
             NaturalLanguageAnnotated: The response from the AI
         """
         self._initialize_conversation()
-        function_result = self.conversation.run(self.openai_function.name, prompt)
-        response = self.conversation.run_until_response(False)
+        function_result = self.conversation.run(
+            self.openai_function.name, prompt, retries=retries
+        )
+        response = self.conversation.run_until_response(False, retries=retries)
         return NaturalLanguageAnnotated(function_result, response.content)
 
 

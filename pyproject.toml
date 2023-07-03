@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openai-functions"
-version = "0.6.9"
+version = "0.6.10"
 description = "Simplifies the usage of OpenAI ChatGPT's function calling by generating the schemas and parsing OpenAI's responses for you."
 authors = ["rizerphe <44440399+rizerphe@users.noreply.github.com>"]
 readme = "README.md"
