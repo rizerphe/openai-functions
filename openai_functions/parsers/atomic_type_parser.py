@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Any, TYPE_CHECKING, Type, TypeVar
 
+from ..exceptions import BrokenSchemaError
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
@@ -34,5 +35,5 @@ class AtomicParser(ArgSchemaParser[T]):
 
     def parse_value(self, value: JsonType) -> T:
         if not isinstance(value, self._type):
-            raise TypeError(f"Expected {self._type}, got {type(value)}")
+            raise BrokenSchemaError(value, self.argument_schema)
         return value

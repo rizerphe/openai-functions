@@ -1,7 +1,10 @@
 """ChatGPT function calling based on function docstrings."""
 from .conversation import Conversation
 from .exceptions import (
+    BrokenSchemaError,
+    CannotParseTypeError,
     FunctionNotFoundError,
+    InvalidJsonError,
     NonSerializableOutputError,
     OpenAIFunctionsError,
 )
@@ -23,7 +26,10 @@ from .parsers import ArgSchemaParser, defargparsers
 
 __all__ = [
     "Conversation",
+    "BrokenSchemaError",
+    "CannotParseTypeError",
     "FunctionNotFoundError",
+    "InvalidJsonError",
     "NonSerializableOutputError",
     "OpenAIFunctionsError",
     "BasicFunctionSet",

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from ..exceptions import FunctionNotFoundError
+from ..exceptions import FunctionNotFoundError, InvalidJsonError
 from .functions import FunctionResult, OpenAIFunction, RawFunctionResult
 from .sets import MutableFunctionSet
 
@@ -49,7 +49,11 @@ class BasicFunctionSet(MutableFunctionSet):
             FunctionNotFoundError: If the function is not found
         """
         function = self.find_function(input_data["name"])
-        result = self.get_function_result(function, json.loads(input_data["arguments"]))
+        try:
+            arguments = json.loads(input_data["arguments"])
+        except json.decoder.JSONDecodeError as e:
+            raise InvalidJsonError(input_data["arguments"]) from e
+        result = self.get_function_result(function, arguments)
         return FunctionResult(
             function.name, result, function.remove_call, function.interpret_as_response
         )

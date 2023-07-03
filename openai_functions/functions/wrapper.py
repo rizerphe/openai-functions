@@ -6,6 +6,7 @@ from typing import Any, Callable, OrderedDict, TYPE_CHECKING, Type
 
 from docstring_parser import Docstring, parse
 
+from ..exceptions import BrokenSchemaError, CannotParseTypeError
 from ..parsers import ArgSchemaParser, defargparsers
 
 if TYPE_CHECKING:
@@ -221,7 +222,7 @@ class FunctionWrapper:
             argument (inspect.Parameter): The argument to parse
 
         Raises:
-            TypeError: If the argument cannot be parsed
+            CannotParseTypeError: If the argument cannot be parsed
 
         Returns:
             ArgSchemaParser: The parser for the argument
@@ -232,7 +233,7 @@ class FunctionWrapper:
         for parser in self.parsers:
             if parser.can_parse(argument.annotation):
                 return parser(argument.annotation, self.parsers)
-        raise TypeError(f"Cannot parse argument {argument}")
+        raise CannotParseTypeError(argument.annotation)
 
     def parse_arguments(self, arguments: dict[str, JsonType]) -> OrderedDict[str, Any]:
         """Parse arguments
@@ -243,10 +244,16 @@ class FunctionWrapper:
         Returns:
             OrderedDict[str, Any]: The parsed arguments
         """
-        return OrderedDict(
-            (name, self.argument_parsers[name].parse_value(value))
-            for name, value in arguments.items()
-        )
+        argument_parsers = self.argument_parsers
+        if not all(name in arguments for name in argument_parsers):
+            raise BrokenSchemaError(arguments, self.arguments_schema)
+        try:
+            return OrderedDict(
+                (name, argument_parsers[name].parse_value(value))
+                for name, value in arguments.items()
+            )
+        except KeyError as e:
+            raise BrokenSchemaError(arguments, self.arguments_schema) from e
 
     def __call__(self, arguments: dict[str, JsonType]) -> Any:
         """Call the wrapped function

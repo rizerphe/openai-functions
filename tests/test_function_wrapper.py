@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 
 import pytest
 
-from openai_functions import FunctionWrapper
+from openai_functions import BrokenSchemaError, CannotParseTypeError, FunctionWrapper
 
 
 def test_function_schema_generation_empty():
@@ -177,7 +177,7 @@ def test_function_schema_generation_invalid_parameters():
     def test_function(param1: object, param2: str, param3: bool):
         """Test function docstring."""
 
-    with pytest.raises(TypeError):
+    with pytest.raises(CannotParseTypeError):
         FunctionWrapper(test_function).schema
 
 
@@ -207,7 +207,7 @@ def test_function_call_with_union():
     assert function_wrapper({"param1": 1}) == 1
     assert function_wrapper({"param1": "test"}) == "test"
     assert function_wrapper({"param1": None}) is None
-    with pytest.raises(TypeError):
+    with pytest.raises(BrokenSchemaError):
         function_wrapper({"param1": True})
 
 
@@ -250,7 +250,7 @@ def test_dataclass():
         },
     }
     function_wrapper({"container": {"item": 1, "priority": 2}})
-    with pytest.raises(TypeError):
+    with pytest.raises(BrokenSchemaError):
         function_wrapper({"container": 1})
 
 
@@ -324,7 +324,7 @@ def test_invalid_dataclass_field():
     def test_function(container: Container):
         """Test function docstring."""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(CannotParseTypeError):
         FunctionWrapper(test_function).schema
 
 
@@ -355,7 +355,7 @@ def test_dictionary():
         },
     }
     function_wrapper({"container": {"item": 1, "priority": 2}})
-    with pytest.raises(TypeError):
+    with pytest.raises(BrokenSchemaError):
         function_wrapper({"container": [(1, 2), (3, 4)]})
 
 
@@ -384,7 +384,7 @@ def test_array():
         },
     }
     function_wrapper({"container": [1, "test"]})
-    with pytest.raises(TypeError):
+    with pytest.raises(BrokenSchemaError):
         function_wrapper({"container": "test"})
 
 
@@ -421,7 +421,7 @@ def test_enum():
         },
     }
     function_wrapper({"priority": "LOW"})
-    with pytest.raises(TypeError):
+    with pytest.raises(BrokenSchemaError):
         function_wrapper({"priority": 1})
 
 

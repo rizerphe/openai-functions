@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from ..exceptions import BrokenSchemaError
 from .atomic_type_parser import AtomicParser
 
 if TYPE_CHECKING:
@@ -16,5 +17,5 @@ class FloatParser(AtomicParser[float]):
 
     def parse_value(self, value: JsonType) -> float:
         if not isinstance(value, (float, int)):
-            raise TypeError(f"Expected float, got {value}")
+            raise BrokenSchemaError(value, self.argument_schema)
         return float(value)

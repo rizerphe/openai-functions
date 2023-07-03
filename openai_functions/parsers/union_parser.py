@@ -2,6 +2,7 @@
 from __future__ import annotations
 import contextlib
 
+from ..exceptions import BrokenSchemaError
 from .abc import ArgSchemaParser
 
 try:
@@ -39,6 +40,6 @@ class UnionParser(ArgSchemaParser[UnionType]):
 
     def parse_value(self, value: JsonType) -> UnionType:
         for single_type in get_args(self.argtype):
-            with contextlib.suppress(TypeError):
+            with contextlib.suppress(BrokenSchemaError):
                 return self.parse_rec(single_type).parse_value(value)
-        raise TypeError(f"Expected one of {get_args(self.argtype)}, got {value}")
+        raise BrokenSchemaError(value, self.argument_schema)

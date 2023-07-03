@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TYPE_CHECKING, Type, TypeVar
 
+from ..exceptions import CannotParseTypeError
+
 if TYPE_CHECKING:
     from ..json_type import JsonType
     from typing_extensions import TypeGuard
@@ -34,12 +36,12 @@ class ArgSchemaParser(ABC, Generic[T]):
             ArgSchemaParser[S]: The parser for the type
 
         Raises:
-            ValueError: If the type cannot be parsed
+            CannotParseTypeError: If the type cannot be parsed
         """
         for parser in self.rec_parsers:
             if parser.can_parse(argtype):
                 return parser(argtype, self.rec_parsers)
-        raise ValueError(f"Cannot parse type {argtype}")
+        raise CannotParseTypeError(argtype)
 
     @classmethod
     @abstractmethod
@@ -61,4 +63,7 @@ class ArgSchemaParser(ABC, Generic[T]):
 
         Args:
             value (JsonType): The value to parse
+
+        Raises:
+            BrokenSchemaError: If the value does not match the schema
         """

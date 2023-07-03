@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING, Type, TypeVar, get_args, get_origin
 
+from ..exceptions import BrokenSchemaError
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
@@ -30,5 +31,5 @@ class ListParser(ArgSchemaParser[List[T]]):
 
     def parse_value(self, value: JsonType) -> List[T]:
         if not isinstance(value, list):
-            raise TypeError(f"Expected list, got {value}")
+            raise BrokenSchemaError(value, self.argument_schema)
         return [self.parse_rec(get_args(self.argtype)[0]).parse_value(v) for v in value]

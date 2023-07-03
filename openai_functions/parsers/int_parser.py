@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from ..exceptions import BrokenSchemaError
 from .atomic_type_parser import AtomicParser
 
 if TYPE_CHECKING:
@@ -18,5 +19,5 @@ class IntParser(AtomicParser[int]):
         if isinstance(value, bool):
             # This has to happen for historical reasons
             # bool is a subclass of int, so isinstance(value, int) is True
-            raise TypeError(f"Expected int, got {value}")
+            raise BrokenSchemaError(value, self.argument_schema)
         return super().parse_value(value)

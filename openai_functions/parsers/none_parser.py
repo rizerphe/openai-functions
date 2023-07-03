@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Type
 
+from ..exceptions import BrokenSchemaError
 from .abc import ArgSchemaParser
 
 if TYPE_CHECKING:
@@ -22,4 +23,4 @@ class NoneParser(ArgSchemaParser[None]):
 
     def parse_value(self, value: JsonType) -> None:
         if value is not None:
-            raise TypeError(f"Expected None, got {type(value)}")
+            raise BrokenSchemaError(value, self.argument_schema)
