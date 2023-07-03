@@ -367,17 +367,18 @@ class Conversation:
         """
         self.skills.add_skill(skill)
 
-    def run(self, function: str, prompt: str) -> Any:
+    def run(self, function: str, prompt: str | None = None) -> Any:
         """Run a specified function and return the raw function result
 
         Args:
-            prompt (str): The prompt to use
             function (str): The function to run
+            prompt (str | None): The prompt to use
 
         Returns:
             The raw function result
         """
-        self.add_message(prompt)
+        if prompt is not None:
+            self.add_message(prompt)
         # We can do type: ignore as we know we're forcing a function call
         response: FunctionCallMessage
         response = self.generate_message({"name": function})  # type: ignore
