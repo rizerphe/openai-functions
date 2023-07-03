@@ -11,11 +11,28 @@ class OpenAIFunctionsError(Exception):
 
 
 class FunctionNotFoundError(OpenAIFunctionsError):
-    """The function was not found in the given skillset."""
+    """The function was not found in the given skillset.
+
+    Attributes:
+        function_name (str): The name of the function that was not found
+    """
+
+    def __init__(self, function_name: str) -> None:
+        """Initialize the FunctionNotFoundError.
+
+        Args:
+            function_name (str): The name of the function that was not found
+        """
+        super().__init__(f"Function {function_name} not found.")
+        self.function_name = function_name
 
 
 class CannotParseTypeError(OpenAIFunctionsError):
-    """This type of the argument could not be parsed."""
+    """This type of the argument could not be parsed.
+
+    Attributes:
+        argtype (Any): The type that could not be parsed
+    """
 
     def __init__(self, argtype: Any) -> None:
         """Initialize the CannotParseTypeError.
@@ -28,7 +45,11 @@ class CannotParseTypeError(OpenAIFunctionsError):
 
 
 class NonSerializableOutputError(OpenAIFunctionsError):
-    """The function returned a non-serializable output."""
+    """The function returned a non-serializable output.
+
+    Attributes:
+        result (Any): The result that was not serializable
+    """
 
     def __init__(self, result: Any) -> None:
         """Initialize the NonSerializableOutputError.
@@ -44,7 +65,11 @@ class NonSerializableOutputError(OpenAIFunctionsError):
 
 
 class InvalidJsonError(OpenAIFunctionsError):
-    """OpenAI returned invalid JSON for the arguments."""
+    """OpenAI returned invalid JSON for the arguments.
+
+    Attributes:
+        response (str): The response that was not valid JSON
+    """
 
     def __init__(self, response: str) -> None:
         """Initialize the InvalidJsonError.
@@ -59,7 +84,12 @@ class InvalidJsonError(OpenAIFunctionsError):
 
 
 class BrokenSchemaError(OpenAIFunctionsError):
-    """The OpenAI response did not match the schema."""
+    """The OpenAI response did not match the schema.
+
+    Attributes:
+        response (JsonType): The response that did not match the schema
+        schema (JsonType): The schema that the response did not match
+    """
 
     def __init__(self, response: JsonType, schema: JsonType) -> None:
         """Initialize the BrokenSchemaError.

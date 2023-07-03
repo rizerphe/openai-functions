@@ -40,6 +40,8 @@ weather = skill(
 )
 ```
 
+When invalid JSON is passed in for the arguments, either because of the output not adhering to the schema or not being valid JSON at all (both of which camn be caused by OpenAI), the tool will raise either [BrokenSchemaError](openai_functions.BrokenSchemaError) or [InvalidJsonError](openai_functions.InvalidJsonError).
+
 ## Union skills
 
 A more advanced one is a [union skillset](openai_functions.UnionSkillSet) that combines others. It exposes one new method:

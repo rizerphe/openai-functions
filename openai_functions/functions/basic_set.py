@@ -73,7 +73,7 @@ class BasicFunctionSet(MutableFunctionSet):
         for function in self.functions:
             if function.name == function_name:
                 return function
-        raise FunctionNotFoundError(f"Function {function_name} not found")
+        raise FunctionNotFoundError(function_name)
 
     def get_function_result(
         self, function: OpenAIFunction, arguments: dict[str, JsonType]

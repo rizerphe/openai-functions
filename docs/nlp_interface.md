@@ -40,7 +40,9 @@ def set_current_weather(location: str, description: str):
     return "Set the weather successfully"
 ```
 
-The parameters it takes are:
+Note: watch out for incomplete or invalid responses from OpenAI - currently they do not bother with validating the outputs, and the generation might cut off in the middle of the JSON output. If either of these happens, the tool will raise either [BrokenSchemaError](openai_functions.BrokenSchemaError) or [InvalidJsonError](openai_functions.InvalidJsonError).
+
+The parameters `@nlp` takes are:
 
 - `name` - the name of the function sent to the AI, defaulting to the function name itself
 - `description` - the description of the function sent to the AI, defaults to getting the short description from the function's docstring

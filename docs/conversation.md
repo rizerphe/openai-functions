@@ -86,3 +86,5 @@ raw_weather_result = conversation.run("get_weather", "What's the weather in San 
 ```
 
 However, for most usecases [@nlp](nlp_interface) should be sufficient; consider using it.
+
+Note: watch out for incomplete or invalid responses from OpenAI - currently they do not bother with validating the outputs, and the generation might cut off in the middle of the JSON output. If either of these happens, the tool will raise either [BrokenSchemaError](openai_functions.BrokenSchemaError) or [InvalidJsonError](openai_functions.InvalidJsonError).

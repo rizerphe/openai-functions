@@ -82,5 +82,5 @@ class TogglableSet(BasicFunctionSet):
             if input_data["name"] == self.enable_function_name:
                 self.enable()
                 return FunctionResult(self.enable_function_name, None, True)
-            raise FunctionNotFoundError(f"Function {input_data['name']} not found")
+            raise FunctionNotFoundError(input_data["name"])
         return super().run_function(input_data)
