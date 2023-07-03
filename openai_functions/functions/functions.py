@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import json
 from typing import Any, Protocol, TYPE_CHECKING, runtime_checkable
 
-from .exceptions import NonSerializableOutputError
+from ..exceptions import NonSerializableOutputError
 
 if TYPE_CHECKING:
     from ..json_type import JsonType
@@ -18,7 +18,7 @@ class OpenAIFunction(Protocol):
     as well as those that define the treatment of the return value.
     """
 
-    def __call__(self, arguments: dict[str, JsonType]) -> JsonType:
+    def __call__(self, arguments: dict[str, JsonType]) -> Any:
         ...
 
     @property
@@ -64,16 +64,17 @@ class RawFunctionResult:
         """Get the serialized result
 
         Raises:
-            NonSerializableOutputError: If the result is not a string
+            NonSerializableOutputError: If the result cannot be serialized
 
         Returns:
             str: The serialized result
         """
         if self.serialize:
-            return json.dumps(self.result)
-        if isinstance(self.result, str):
-            return self.result
-        raise NonSerializableOutputError()
+            try:
+                return json.dumps(self.result)
+            except TypeError as error:
+                raise NonSerializableOutputError(self.result) from error
+        return str(self.result)
 
 
 @dataclass
@@ -99,7 +100,7 @@ class FunctionResult:
         """Get the result of this function call
 
         Returns:
-            JsonType: The result
+            The raw result of the function call
         """
         if self.raw_result:
             return self.raw_result.result

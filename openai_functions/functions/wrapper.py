@@ -47,7 +47,7 @@ class FunctionWrapper:
     They are accessed via the `schema` property and a `__call__` method respectively.
 
     Args:
-        func (Callable[..., JsonType]): The function to wrap
+        func (Callable[..., Any]): The function to wrap
         config (WrapperConfig | None, optional): The configuration for the wrapper.
     """
 
@@ -61,7 +61,7 @@ class FunctionWrapper:
         """Initialize a FunctionWrapper
 
         Args:
-            func (Callable[..., JsonType]): The function to wrap
+            func (Callable[..., Any]): The function to wrap
             config (WrapperConfig | None, optional): The configuration for the wrapper.
             name (str | None): The name override for the function.
             description (str | None): The description override for the function.

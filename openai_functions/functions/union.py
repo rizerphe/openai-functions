@@ -3,8 +3,8 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
+from ..exceptions import FunctionNotFoundError
 from .basic_set import BasicFunctionSet
-from .exceptions import FunctionNotFoundError
 
 if TYPE_CHECKING:
     from ..json_type import JsonType

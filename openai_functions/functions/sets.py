@@ -2,7 +2,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import Callable, TYPE_CHECKING, overload
+from typing import Any, Callable, TYPE_CHECKING, overload
 
 from .functions import FunctionResult, OpenAIFunction
 from .wrapper import FunctionWrapper, WrapperConfig
@@ -57,7 +57,7 @@ class MutableFunctionSet(FunctionSet):
     @overload
     def add_function(
         self,
-        function: Callable[..., JsonType],
+        function: Callable[..., Any],
         *,
         name: str | None = None,
         description: str | None = None,
@@ -65,7 +65,7 @@ class MutableFunctionSet(FunctionSet):
         serialize: bool = True,
         remove_call: bool = False,
         interpret_as_response: bool = False,
-    ) -> Callable[..., JsonType]:
+    ) -> Callable[..., Any]:
         ...
 
     @overload
@@ -78,12 +78,12 @@ class MutableFunctionSet(FunctionSet):
         serialize: bool = True,
         remove_call: bool = False,
         interpret_as_response: bool = False,
-    ) -> Callable[[Callable[..., JsonType]], Callable[..., JsonType]]:
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         ...
 
     def add_function(
         self,
-        function: OpenAIFunction | Callable[..., JsonType] | None = None,
+        function: OpenAIFunction | Callable[..., Any] | None = None,
         *,
         name: str | None = None,
         description: str | None = None,
@@ -91,14 +91,11 @@ class MutableFunctionSet(FunctionSet):
         serialize: bool = True,
         remove_call: bool = False,
         interpret_as_response: bool = False,
-    ) -> (
-        Callable[[Callable[..., JsonType]], Callable[..., JsonType]]
-        | Callable[..., JsonType]
-    ):
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]] | Callable[..., Any]:
         """Add a function
 
         Args:
-            function (OpenAIFunction | Callable[..., JsonType]): The function
+            function (OpenAIFunction | Callable[..., Any]): The function
             name (str): The name of the function. Defaults to the function's name.
             description (str): The description of the function. Defaults to getting
                 the short description from the function's docstring.
@@ -113,8 +110,8 @@ class MutableFunctionSet(FunctionSet):
                 value of this function as a response of the agent. Defaults to False.
 
         Returns:
-            Callable[[Callable[..., JsonType]], Callable[..., JsonType]]: A decorator
-            Callable[..., JsonType]: The original function
+            Callable[[Callable[..., Any]], Callable[..., Any]]: A decorator
+            Callable[..., Any]: The original function
         """
         if isinstance(function, OpenAIFunction):
             self._add_function(function)
@@ -147,12 +144,12 @@ class MutableFunctionSet(FunctionSet):
         ...
 
     def remove_function(
-        self, function: str | OpenAIFunction | Callable[..., JsonType]
+        self, function: str | OpenAIFunction | Callable[..., Any]
     ) -> None:
         """Remove a function
 
         Args:
-            function (str | OpenAIFunction | Callable[..., JsonType]): The function
+            function (str | OpenAIFunction | Callable[..., Any]): The function
         """
         if isinstance(function, str):
             self._remove_function(function)

@@ -1,12 +1,12 @@
 """A module for running OpenAI functions"""
 from __future__ import annotations
 from dataclasses import dataclass
-from functools import partial, update_wrapper
+from functools import partial
 from typing import Callable, Generic, Protocol, TypeVar, overload
 from typing_extensions import ParamSpec
 
 from .conversation import Conversation
-from .functions.wrapper import FunctionWrapper
+from .functions.wrapper import FunctionWrapper, WrapperConfig
 
 
 Param = ParamSpec("Param")
@@ -48,12 +48,16 @@ class Wrapper(Generic[Param, Return]):
         model: str = "gpt-3.5-turbo-0613",
         name: str | None = None,
         description: str | None = None,
+        serialize: bool = True,
     ) -> None:
         self.origin = origin
         self.system_prompt = system_prompt
         self.conversation = Conversation(model=model)
         self.openai_function = FunctionWrapper(
-            self.origin, name=name, description=description
+            self.origin,
+            WrapperConfig(serialize=serialize),
+            name=name,
+            description=description,
         )
         self.conversation.add_function(self.openai_function)
 
@@ -133,6 +137,7 @@ def _nlp(
     description: str | None = None,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
+    serialize: bool = True,
 ) -> Wrapper[Param, Return]:
     """Add natural language input to a function
 
@@ -142,6 +147,7 @@ def _nlp(
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
         name (str | None): The name override for the function.
         description (str | None): The description sent to OpenAI.
+        serialize (bool): Whether to serialize the function result.
 
     Returns:
         The function, with natural language input, or a decorator to add natural
@@ -154,8 +160,8 @@ def _nlp(
         model=model,
         name=name,
         description=description,
+        serialize=serialize,
     )
-    update_wrapper(wrapped, function)
 
     return wrapped
 
@@ -166,6 +172,7 @@ def nlp(
     *,
     name: str | None = None,
     description: str | None = None,
+    serialize: bool = True,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> Wrapper[Param, Return]:
@@ -177,6 +184,7 @@ def nlp(
     *,
     name: str | None = None,
     description: str | None = None,
+    serialize: bool = True,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> DecoratorProtocol:
@@ -188,6 +196,7 @@ def nlp(
     *,
     name: str | None = None,
     description: str | None = None,
+    serialize: bool = True,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> Wrapper[Param, Return] | DecoratorProtocol:
@@ -200,6 +209,7 @@ def nlp(
             the function name if not provided.
         description (str | None): The description sent to OpenAI, defaults to the short
             description from the function docstring.
+        serialize (bool): Whether to serialize the function result.
         system_prompt (str | None): The system prompt to use. Defaults to None.
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
 
@@ -213,6 +223,7 @@ def nlp(
             _nlp,
             name=name,
             description=description,
+            serialize=serialize,
             system_prompt=system_prompt,
             model=model,
         )
@@ -221,6 +232,7 @@ def nlp(
         function,
         name=name,
         description=description,
+        serialize=serialize,
         system_prompt=system_prompt,
         model=model,
     )

@@ -2,8 +2,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from ..exceptions import FunctionNotFoundError
 from .basic_set import BasicFunctionSet
-from .exceptions import FunctionNotFoundError
 from .functions import FunctionResult
 from .functions import OpenAIFunction
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from .exceptions import FunctionNotFoundError
+from ..exceptions import FunctionNotFoundError
 from .functions import FunctionResult, OpenAIFunction, RawFunctionResult
 from .sets import MutableFunctionSet
 
