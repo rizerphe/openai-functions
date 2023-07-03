@@ -42,6 +42,11 @@ class OpenAIFunction(Protocol):
         ...  # pylint: disable=unnecessary-ellipsis
 
     @property
+    def remove_call(self) -> bool:
+        """Get whether to remove the call to this function from the chat history"""
+        ...  # pylint: disable=unnecessary-ellipsis
+
+    @property
     def interpret_as_response(self) -> bool:
         """Get whether to interpret the return value of this function as a response"""
         ...  # pylint: disable=unnecessary-ellipsis
@@ -77,7 +82,8 @@ class FunctionResult:
 
     name: str
     raw_result: RawFunctionResult | None
-    substitute: bool = False
+    remove_call: bool = False
+    interpret_return_as_response: bool = False
 
     @property
     def content(self) -> str | None:

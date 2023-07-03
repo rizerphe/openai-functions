@@ -61,6 +61,7 @@ class MutableFunctionSet(FunctionSet):
         *,
         save_return: bool = True,
         serialize: bool = True,
+        remove_call: bool = False,
         interpret_as_response: bool = False,
     ) -> Callable[..., JsonType]:
         ...
@@ -71,6 +72,7 @@ class MutableFunctionSet(FunctionSet):
         *,
         save_return: bool = True,
         serialize: bool = True,
+        remove_call: bool = False,
         interpret_as_response: bool = False,
     ) -> Callable[[Callable[..., JsonType]], Callable[..., JsonType]]:
         ...
@@ -81,6 +83,7 @@ class MutableFunctionSet(FunctionSet):
         *,
         save_return: bool = True,
         serialize: bool = True,
+        remove_call: bool = False,
         interpret_as_response: bool = False,
     ) -> (
         Callable[[Callable[..., JsonType]], Callable[..., JsonType]]
@@ -95,6 +98,8 @@ class MutableFunctionSet(FunctionSet):
             serialize (bool): Whether to serialize the return value of this
                 function. Defaults to True. Otherwise, the return value must be a
                 string.
+            remove_call (bool): Whether to remove the function call from the AI's
+                chat history. Defaults to False.
             interpret_as_response (bool): Whether to interpret the return
                 value of this function as a response of the agent. Defaults to False.
 
@@ -109,7 +114,9 @@ class MutableFunctionSet(FunctionSet):
             self._add_function(
                 FunctionWrapper(
                     function,
-                    WrapperConfig(None, save_return, serialize, interpret_as_response),
+                    WrapperConfig(
+                        None, save_return, serialize, remove_call, interpret_as_response
+                    ),
                 )
             )
             return function

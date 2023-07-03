@@ -24,6 +24,8 @@ class WrapperConfig:
         save_return (bool): Whether to send the return value back to the AI
         serialize (bool): Whether to serialize the return value; if False, the
             return value must be a string
+        remove_call (bool): Whether to remove the call to this function from the
+            chat history
         interpret_as_response (bool): Whether to interpret the return value as a
             response from the agent directly, or to base the response on the
             return value
@@ -32,6 +34,7 @@ class WrapperConfig:
     parsers: list[Type[ArgSchemaParser]] | None = None
     save_return: bool = True
     serialize: bool = True
+    remove_call: bool = False
     interpret_as_response: bool = False
 
 
@@ -90,6 +93,15 @@ class FunctionWrapper:
             bool: Whether to serialize the return value
         """
         return self.config.serialize
+
+    @property
+    def remove_call(self) -> bool:
+        """Get whether to remove the call to this function from the chat history
+
+        Returns:
+            bool: Whether to remove the call to this function from the chat history
+        """
+        return self.config.remove_call
 
     @property
     def interpret_as_response(self) -> bool:

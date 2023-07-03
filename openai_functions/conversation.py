@@ -134,20 +134,19 @@ class Conversation:
         )
         return response["choices"][0]["message"]  # type: ignore
 
-    def substitute_last_with_function_result(self, result: str) -> None:
-        """Substitute the last message with the result of a function
+    def remove_function_call(self, function_name: str) -> None:
+        """Remove a function call from the messages, if it is the last message
 
         Args:
-            result (str): The function result
+            function_name (str): The function name
         """
-        self.pop_message()
-        response: NonFunctionMessageType = {
-            "role": "assistant",
-            "content": result,
-        }
-        self.add_message(response)
+        if (
+            self.messages[-1].function_call
+            and self.messages[-1].function_call["name"] == function_name
+        ):
+            self.pop_message()
 
-    def add_function_result(self, function_result: FunctionResult) -> bool:
+    def _add_function_result(self, function_result: FunctionResult) -> bool:
         """Add a function execution result to the chat
 
         Args:
@@ -159,41 +158,56 @@ class Conversation:
         """
         if function_result.content is None:
             return False
+        if function_result.interpret_return_as_response:
+            self._add_function_result_as_response(function_result.content)
+        else:
+            self._add_function_result_as_function_call(function_result)
+        return True
+
+    def _add_function_result_as_response(self, function_result: str) -> None:
+        """Add a function execution result to the chat as an assistant response
+
+        Args:
+            function_result (str): The function execution result
+        """
+        response: FinalResponseMessageType = {
+            "role": "assistant",
+            "content": function_result,
+        }
+        self.add_message(response)
+
+    def _add_function_result_as_function_call(
+        self, function_result: FunctionResult
+    ) -> None:
+        """Add a function execution result to the chat as a function call
+
+        Args:
+            function_result (FunctionResult): The function execution result
+        """
         response: FunctionMessageType = {
             "role": "function",
             "name": function_result.name,
             "content": function_result.content,
         }
         self.add_message(response)
-        return True
 
-    def add_or_substitute_function_result(
-        self, function_result: FunctionResult
-    ) -> bool:
-        """Add or substitute a function execution result
+    def add_function_result(self, function_result: FunctionResult) -> bool:
+        """Add a function execution result
 
-        If the function has interpret_as_response set to True, the last message,
-        which is assumed to be a function call, will be replaced with the function
-        execution result. Otherwise, the function execution result will be added
-        to the chat.
+        If the function has a return value (save_return is True), it will be added to
+        the chat. The function call will be removed depending on the remove_call
+        attribute, and the function result will be interpreted as a response or a
+        function call depending on the interpret_return_as_response attribute.
 
         Args:
             function_result (FunctionResult): The function result
 
-        Raises:
-            TypeError: If the function returns a None value
-
         Returns:
             bool: Whether the function result was added
         """
-        if function_result.substitute:
-            if function_result.content is None:
-                raise TypeError(
-                    f"Function {function_result.name} did not provide a return"
-                )
-            self.substitute_last_with_function_result(function_result.content)
-            return True
-        return self.add_function_result(function_result)
+        if function_result.remove_call:
+            self.remove_function_call(function_result.name)
+        return self._add_function_result(function_result)
 
     def run_function_and_substitute(
         self,
@@ -211,9 +225,7 @@ class Conversation:
             bool: Whether the function result was added to the chat
                 (whether save_return was True)
         """
-        return self.add_or_substitute_function_result(
-            self.skills.run_function(function_call)
-        )
+        return self.add_function_result(self.skills.run_function(function_call))
 
     def run_function_if_needed(self) -> bool:
         """Run a function if the last message was a function call
@@ -283,6 +295,7 @@ class Conversation:
         *,
         save_return: bool = True,
         serialize: bool = True,
+        remove_call: bool = False,
         interpret_as_response: bool = False,
     ) -> Callable[..., JsonType]:
         ...
@@ -293,6 +306,7 @@ class Conversation:
         *,
         save_return: bool = True,
         serialize: bool = True,
+        remove_call: bool = False,
         interpret_as_response: bool = False,
     ) -> Callable[[Callable[..., JsonType]], Callable[..., JsonType]]:
         ...
@@ -303,6 +317,7 @@ class Conversation:
         *,
         save_return: bool = True,
         serialize: bool = True,
+        remove_call: bool = False,
         interpret_as_response: bool = False,
     ) -> (
         Callable[[Callable[..., JsonType]], Callable[..., JsonType]]
@@ -315,10 +330,11 @@ class Conversation:
             save_return (bool): Whether to send the return value of this function back
                 to the AI. Defaults to True.
             serialize (bool): Whether to serialize the return value of this function.
-            Defaults to True. Otherwise, the return value must be a string.
+                Otherwise, the return value must be a string.
+            remove_call (bool): Whether to remove the function call itself from the chat
+                history
             interpret_as_response (bool): Whether to interpret the return value of this
-                function as a response of the agent, replacing the function call
-                message. Defaults to False.
+                function as the natural language response of the AI.
 
         Returns:
             Callable[[Callable[..., JsonType]], Callable[..., JsonType]]: A decorator
@@ -328,12 +344,14 @@ class Conversation:
             return self.skills.add_function(
                 save_return=save_return,
                 serialize=serialize,
+                remove_call=remove_call,
                 interpret_as_response=interpret_as_response,
             )
         return self.skills.add_function(
             function,
             save_return=save_return,
             serialize=serialize,
+            remove_call=remove_call,
             interpret_as_response=interpret_as_response,
         )
 

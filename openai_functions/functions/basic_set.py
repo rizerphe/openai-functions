@@ -50,7 +50,9 @@ class BasicFunctionSet(MutableFunctionSet):
         """
         function = self.find_function(input_data["name"])
         result = self.get_function_result(function, json.loads(input_data["arguments"]))
-        return FunctionResult(function.name, result, function.interpret_as_response)
+        return FunctionResult(
+            function.name, result, function.remove_call, function.interpret_as_response
+        )
 
     def find_function(self, function_name: str) -> OpenAIFunction:
         """Find a function in the skillset
