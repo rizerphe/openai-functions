@@ -38,6 +38,8 @@ def my_awesome_function(...):
     ...
 
 @conversation.add_function(
+    name="my_really_amazing_function",
+    description="The most amazing function of them all",
     save_return=True,
     serialize=False,
     remove_call=False,
@@ -51,8 +53,10 @@ conversation.remove_function(my_awesome_function)
 conversation.remove_function("my_amazing_function")
 ```
 
-The arguments passed to `add_function` are the same as those an [OpenAIFunction](openai_functions.OpenAIFunction) inherently has:
+All of the keyword arguments passed to `add_function` are optional; most of them are the same as those an [OpenAIFunction](openai_functions.OpenAIFunction) inherently has:
 
+- `name` - the overwritten function name, otherwise will default to the function name
+- `description` - the overwritten function description sent to the AI - will use the description from the docstring by default
 - `save_return` - whether to send the return value of the function back to the AI; some functions - mainly those that don't return anything - don't need to do this
 - `serialize` - whether to serialize the function's return value before sending the result back to the AI; openai expects a function call to be a string, so if this is False, the result of the function execution should be a string. Otherwise, it will use JSON serialization, so if `serialize` is set to True, the function return needs to be JSON-serializable
 - `remove_call` - whether to remove the function call message itself; be careful to avoid infinite loops when using with `save_return=False`; the function should then, for example, disappear from the schema; it's your responsibility to make sure this happens

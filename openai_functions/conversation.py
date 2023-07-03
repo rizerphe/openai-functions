@@ -293,6 +293,8 @@ class Conversation:
         self,
         function: Callable[..., JsonType],
         *,
+        name: str | None = None,
+        description: str | None = None,
         save_return: bool = True,
         serialize: bool = True,
         remove_call: bool = False,
@@ -304,6 +306,8 @@ class Conversation:
     def add_function(
         self,
         *,
+        name: str | None = None,
+        description: str | None = None,
         save_return: bool = True,
         serialize: bool = True,
         remove_call: bool = False,
@@ -315,6 +319,8 @@ class Conversation:
         self,
         function: OpenAIFunction | Callable[..., JsonType] | None = None,
         *,
+        name: str | None = None,
+        description: str | None = None,
         save_return: bool = True,
         serialize: bool = True,
         remove_call: bool = False,
@@ -327,6 +333,9 @@ class Conversation:
 
         Args:
             function (OpenAIFunction | Callable[..., JsonType]): The function to add
+            name (str): The name of the function. Defaults to the function's name.
+            description (str): The description of the function. Defaults to getting
+                the short description from the function's docstring.
             save_return (bool): Whether to send the return value of this function back
                 to the AI. Defaults to True.
             serialize (bool): Whether to serialize the return value of this function.
@@ -342,6 +351,8 @@ class Conversation:
         """
         if function is None:
             return self.skills.add_function(
+                name=name,
+                description=description,
                 save_return=save_return,
                 serialize=serialize,
                 remove_call=remove_call,
@@ -349,6 +360,8 @@ class Conversation:
             )
         return self.skills.add_function(
             function,
+            name=name,
+            description=description,
             save_return=save_return,
             serialize=serialize,
             remove_call=remove_call,

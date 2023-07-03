@@ -59,6 +59,8 @@ class MutableFunctionSet(FunctionSet):
         self,
         function: Callable[..., JsonType],
         *,
+        name: str | None = None,
+        description: str | None = None,
         save_return: bool = True,
         serialize: bool = True,
         remove_call: bool = False,
@@ -70,6 +72,8 @@ class MutableFunctionSet(FunctionSet):
     def add_function(
         self,
         *,
+        name: str | None = None,
+        description: str | None = None,
         save_return: bool = True,
         serialize: bool = True,
         remove_call: bool = False,
@@ -81,6 +85,8 @@ class MutableFunctionSet(FunctionSet):
         self,
         function: OpenAIFunction | Callable[..., JsonType] | None = None,
         *,
+        name: str | None = None,
+        description: str | None = None,
         save_return: bool = True,
         serialize: bool = True,
         remove_call: bool = False,
@@ -93,6 +99,9 @@ class MutableFunctionSet(FunctionSet):
 
         Args:
             function (OpenAIFunction | Callable[..., JsonType]): The function
+            name (str): The name of the function. Defaults to the function's name.
+            description (str): The description of the function. Defaults to getting
+                the short description from the function's docstring.
             save_return (bool): Whether to send the return value of this
                 function to the AI. Defaults to True.
             serialize (bool): Whether to serialize the return value of this
@@ -117,14 +126,19 @@ class MutableFunctionSet(FunctionSet):
                     WrapperConfig(
                         None, save_return, serialize, remove_call, interpret_as_response
                     ),
+                    name=name,
+                    description=description,
                 )
             )
             return function
 
         return partial(
             self.add_function,
+            name=name,
+            description=description,
             save_return=save_return,
             serialize=serialize,
+            remove_call=remove_call,
             interpret_as_response=interpret_as_response,
         )
 

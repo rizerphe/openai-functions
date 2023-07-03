@@ -46,11 +46,15 @@ class Wrapper(Generic[Param, Return]):
         origin: Callable[..., Return],
         system_prompt: str | None = None,
         model: str = "gpt-3.5-turbo-0613",
+        name: str | None = None,
+        description: str | None = None,
     ) -> None:
         self.origin = origin
         self.system_prompt = system_prompt
         self.conversation = Conversation(model=model)
-        self.openai_function = FunctionWrapper(self.origin)
+        self.openai_function = FunctionWrapper(
+            self.origin, name=name, description=description
+        )
         self.conversation.add_function(self.openai_function)
 
     def __call__(self, *args: Param.args, **kwds: Param.kwargs) -> Return:
@@ -117,6 +121,8 @@ class Wrapper(Generic[Param, Return]):
 def _nlp(
     function: Callable[Param, Return],
     *,
+    name: str | None = None,
+    description: str | None = None,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> Wrapper[Param, Return]:
@@ -126,6 +132,8 @@ def _nlp(
         function (Callable): The function to add natural language input to
         system_prompt (str | None): The system prompt to use. Defaults to None.
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
+        name (str | None): The name override for the function.
+        description (str | None): The description sent to OpenAI.
 
     Returns:
         The function, with natural language input, or a decorator to add natural
@@ -133,7 +141,11 @@ def _nlp(
     """
 
     wrapped: Wrapper[Param, Return] = Wrapper(
-        function, system_prompt=system_prompt, model=model
+        function,
+        system_prompt=system_prompt,
+        model=model,
+        name=name,
+        description=description,
     )
     update_wrapper(wrapped, function)
 
@@ -144,6 +156,8 @@ def _nlp(
 def nlp(
     function: Callable[Param, Return],
     *,
+    name: str | None = None,
+    description: str | None = None,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> Wrapper[Param, Return]:
@@ -153,6 +167,8 @@ def nlp(
 @overload
 def nlp(
     *,
+    name: str | None = None,
+    description: str | None = None,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> DecoratorProtocol:
@@ -162,6 +178,8 @@ def nlp(
 def nlp(
     function: Callable[Param, Return] | None = None,
     *,
+    name: str | None = None,
+    description: str | None = None,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
 ) -> Wrapper[Param, Return] | DecoratorProtocol:
@@ -170,6 +188,10 @@ def nlp(
     Args:
         function (Callable | None): The function
             to add natural language input to
+        name (str | None): The name override for the function, will be inferred from
+            the function name if not provided.
+        description (str | None): The description sent to OpenAI, defaults to the short
+            description from the function docstring.
         system_prompt (str | None): The system prompt to use. Defaults to None.
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
 
@@ -179,6 +201,18 @@ def nlp(
     """
 
     if function is None:
-        return partial(_nlp, system_prompt=system_prompt, model=model)
+        return partial(
+            _nlp,
+            name=name,
+            description=description,
+            system_prompt=system_prompt,
+            model=model,
+        )
 
-    return _nlp(function, system_prompt=system_prompt, model=model)
+    return _nlp(
+        function,
+        name=name,
+        description=description,
+        system_prompt=system_prompt,
+        model=model,
+    )

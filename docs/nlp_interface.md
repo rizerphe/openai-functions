@@ -30,6 +30,8 @@ def get_current_weather(location: str):
     ...
 
 @nlp(
+    name="set_current_weather",
+    description="Set the current weather for a given location",
     system_prompt="You're an AI capable of changing the weather.",
     model="gpt-4-0613"
 )
@@ -39,6 +41,9 @@ def set_current_weather(location: str, description: str):
 
 The parameters it takes are:
 
+- `name` - the name of the function sent to the AI, defaulting to the function name itself
+- `description` - the description of the function sent to the AI, defaults to getting the short description from the function's docstring
+- `save_return` - whether to send the return value of the function back to the AI; some functions - mainly those that don't return anything - don't need to do this
 - `system_prompt` - if provided, when asking the AI, the conversation will start with this system prompt, letting you modify the behavior of the model
 - `model` - this is just the model to use; currently (July 1st 2023) only `gpt-3.5-turbo-0613`, `gpt-3.5-turbo-16k-0613` and `gpt-4-0613` are supported
 

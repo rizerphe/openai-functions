@@ -55,15 +55,21 @@ class FunctionWrapper:
         self,
         func: Callable[..., Any],
         config: WrapperConfig | None = None,
+        name: str | None = None,
+        description: str | None = None,
     ) -> None:
         """Initialize a FunctionWrapper
 
         Args:
             func (Callable[..., JsonType]): The function to wrap
             config (WrapperConfig | None, optional): The configuration for the wrapper.
+            name (str | None): The name override for the function.
+            description (str | None): The description override for the function.
         """
         self.func = func
         self.config = config or WrapperConfig()
+        self._name = name
+        self._description = description
 
     @property
     def parsers(self) -> list[Type[ArgSchemaParser]]:
@@ -185,7 +191,7 @@ class FunctionWrapper:
         Returns:
             str: The name
         """
-        return self.func.__name__
+        return self._name or self.func.__name__
 
     @property
     def schema(self) -> dict[str, JsonType]:
@@ -202,8 +208,10 @@ class FunctionWrapper:
                 "required": self.required_arguments,
             },
         }
-        if self.parsed_docs.short_description:
-            schema["description"] = self.parsed_docs.short_description
+        if self.parsed_docs.short_description or self._description:
+            schema["description"] = (
+                self.parsed_docs.short_description or self._description
+            )
         return schema
 
     def parse_argument(self, argument: inspect.Parameter) -> ArgSchemaParser:
