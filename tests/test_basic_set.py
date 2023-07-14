@@ -1,13 +1,19 @@
+from __future__ import annotations
 from dataclasses import dataclass
 import json
-from typing import Any, Callable
+from typing import Any, Callable, TYPE_CHECKING
 
 import pytest
 
-from openai_functions.exceptions import FunctionNotFoundError, InvalidJsonError
-from openai_functions.functions.basic_set import BasicFunctionSet
-from openai_functions.json_type import JsonType
-from openai_functions.openai_types import FunctionCall
+from openai_functions import (
+    BasicFunctionSet,
+    FunctionCall,
+    FunctionNotFoundError,
+    InvalidJsonError,
+)
+
+if TYPE_CHECKING:
+    from openai_functions.json_type import JsonType
 
 
 @dataclass
@@ -204,4 +210,3 @@ def test_remove_function() -> None:
     function_set = BasicFunctionSet(functions=functions)
     function_set.remove_function("test_function")
     assert function_set.functions == []
-
