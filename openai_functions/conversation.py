@@ -348,7 +348,7 @@ class Conversation:
     @overload
     def add_function(
         self,
-        function: Callable[..., JsonType],
+        function: Callable[..., Any],
         *,
         name: str | None = None,
         description: str | None = None,
@@ -356,7 +356,7 @@ class Conversation:
         serialize: bool = True,
         remove_call: bool = False,
         interpret_as_response: bool = False,
-    ) -> Callable[..., JsonType]:
+    ) -> Callable[..., Any]:
         ...
 
     @overload
@@ -369,12 +369,12 @@ class Conversation:
         serialize: bool = True,
         remove_call: bool = False,
         interpret_as_response: bool = False,
-    ) -> Callable[[Callable[..., JsonType]], Callable[..., JsonType]]:
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         ...
 
     def add_function(
         self,
-        function: OpenAIFunction | Callable[..., JsonType] | None = None,
+        function: OpenAIFunction | Callable[..., Any] | None = None,
         *,
         name: str | None = None,
         description: str | None = None,
@@ -382,14 +382,11 @@ class Conversation:
         serialize: bool = True,
         remove_call: bool = False,
         interpret_as_response: bool = False,
-    ) -> (
-        Callable[[Callable[..., JsonType]], Callable[..., JsonType]]
-        | Callable[..., JsonType]
-    ):
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]] | Callable[..., Any]:
         """Add a function to the functions available to the AI
 
         Args:
-            function (OpenAIFunction | Callable[..., JsonType]): The function to add
+            function (OpenAIFunction | Callable[..., Any]): The function to add
             name (str): The name of the function. Defaults to the function's name.
             description (str): The description of the function. Defaults to getting
                 the short description from the function's docstring.
@@ -403,8 +400,8 @@ class Conversation:
                 function as the natural language response of the AI.
 
         Returns:
-            Callable[[Callable[..., JsonType]], Callable[..., JsonType]]: A decorator
-            Callable[..., JsonType]: The original function
+            Callable[[Callable[..., Any]], Callable[..., Any]]: A decorator
+            Callable[..., Any]: The original function
         """
         if function is None:
             return self.skills.add_function(
@@ -426,12 +423,12 @@ class Conversation:
         )
 
     def remove_function(
-        self, function: str | OpenAIFunction | Callable[..., JsonType]
+        self, function: str | OpenAIFunction | Callable[..., Any]
     ) -> None:
         """Remove a function
 
         Args:
-            function (str | OpenAIFunction | Callable[..., JsonType]): The function
+            function (str | OpenAIFunction | Callable[..., Any]): The function
         """
         self.skills.remove_function(function)
 
