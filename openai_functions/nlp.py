@@ -34,6 +34,7 @@ class DecoratorProtocol(
         *,
         system_prompt: str | None = None,
         model: str = "gpt-3.5-turbo-0613",
+        engine: str | None = None,
     ) -> Wrapper[Param, Return]:
         ...
 
@@ -47,6 +48,7 @@ class NLPWrapperConfig:
     serialize: bool = True
 
     model: str = "gpt-3.5-turbo-0613"
+    engine: str | None = None
     system_prompt: str | None = None
 
 
@@ -60,7 +62,7 @@ class Wrapper(Generic[Param, Return]):
     ) -> None:
         self.origin = origin
         self.config = config
-        self.conversation = Conversation(model=config.model)
+        self.conversation = Conversation(model=config.model, engine=config.engine)
         self.openai_function = FunctionWrapper(
             self.origin,
             WrapperConfig(serialize=config.serialize),
@@ -145,6 +147,7 @@ def _nlp(
     description: str | None = None,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
+    engine: str | None = None,
     serialize: bool = True,
 ) -> Wrapper[Param, Return]:
     """Add natural language input to a function
@@ -153,6 +156,7 @@ def _nlp(
         function (Callable): The function to add natural language input to
         system_prompt (str | None): The system prompt to use. Defaults to None.
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
+        engine (str | None): The engine to use, for example, for Azure deployments.
         name (str | None): The name override for the function.
         description (str | None): The description sent to OpenAI.
         serialize (bool): Whether to serialize the function result.
@@ -166,6 +170,7 @@ def _nlp(
         NLPWrapperConfig(
             system_prompt=system_prompt,
             model=model,
+            engine=engine,
             name=name,
             description=description,
             serialize=serialize,
@@ -182,6 +187,7 @@ def nlp(
     serialize: bool = True,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
+    engine: str | None = None,
 ) -> Wrapper[Param, Return]:
     ...
 
@@ -194,6 +200,7 @@ def nlp(
     serialize: bool = True,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
+    engine: str | None = None,
 ) -> DecoratorProtocol:
     ...
 
@@ -206,6 +213,7 @@ def nlp(
     serialize: bool = True,
     system_prompt: str | None = None,
     model: str = "gpt-3.5-turbo-0613",
+    engine: str | None = None,
 ) -> Wrapper[Param, Return] | DecoratorProtocol:
     """Add natural language input to a function
 
@@ -219,6 +227,7 @@ def nlp(
         serialize (bool): Whether to serialize the function result.
         system_prompt (str | None): The system prompt to use. Defaults to None.
         model (str): The model to use. Defaults to "gpt-3.5-turbo-0613".
+        engine (str | None): The engine to use, for example, for Azure deployments.
 
     Returns:
         Wrapper | DecoratorProtocol: The function, with natural language input, or a
@@ -233,6 +242,7 @@ def nlp(
             serialize=serialize,
             system_prompt=system_prompt,
             model=model,
+            engine=engine,
         )
 
     return _nlp(
@@ -242,4 +252,5 @@ def nlp(
         serialize=serialize,
         system_prompt=system_prompt,
         model=model,
+        engine=engine,
     )

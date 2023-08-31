@@ -42,10 +42,12 @@ class Conversation:
         self,
         skills: list[FunctionSet] | None = None,
         model: str = "gpt-3.5-turbo-0613",
+        engine: str | None = None,
     ) -> None:
         self.messages: list[GenericMessage] = []
         self.skills = UnionSkillSet(*(skills or []))
         self.model = model
+        self.engine = engine
 
     @property
     def functions_schema(self) -> list[JsonType]:
@@ -180,6 +182,7 @@ class Conversation:
             The raw OpenAI response
         """
         return openai.ChatCompletion.create(
+            engine=self.engine,
             model=self.model,
             messages=[message.as_dict() for message in self.messages],
             functions=self.functions_schema,

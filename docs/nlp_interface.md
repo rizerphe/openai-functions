@@ -35,6 +35,7 @@ def get_current_weather(location: str):
     serialize=False,
     system_prompt="You're an AI capable of changing the weather.",
     model="gpt-4-0613"
+    engine=None
 )
 def set_current_weather(location: str, description: str):
     return "Set the weather successfully"
@@ -50,5 +51,6 @@ The parameters `@nlp` takes are:
 - `save_return` - whether to send the return value of the function back to the AI; some functions - mainly those that don't return anything - don't need to do this
 - `system_prompt` - if provided, when asking the AI, the conversation will start with this system prompt, letting you modify the behavior of the model
 - `model` - this is just the model to use; currently (July 1st 2023) only `gpt-3.5-turbo-0613`, `gpt-3.5-turbo-16k-0613` and `gpt-4-0613` are supported
+- `engine` - if, for example, using Azure's OpenAI service, your deployment name
 
 Note: mypy does not parse class decorators ([#3135](https://github.com/python/mypy/issues/3135)), so you might have trouble getting type checking when using it like a decorator for a dataclass.

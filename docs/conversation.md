@@ -7,7 +7,7 @@ A conversation contains two things:
 - the messages in the conversation.
 - a skill (composed from a list of [skills](skills) and a list of [`OpenAIFunction`](openai_functions.OpenAIFunction)s inherent to the conversation)
 
-When initializing the conversation, you can pass in the list of skills and the model to use.
+When initializing the conversation, you can pass in the list of skills and the model to use (and your Azure deployment ID if using that).
 
 ## Managing messages
 
